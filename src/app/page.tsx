@@ -63,7 +63,6 @@ export default function Home() {
 
       {isSidebarOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          {/* Overlay */}
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-sm"
             onClick={toggleSidebar}
@@ -127,8 +126,8 @@ export default function Home() {
               Think Global, Solve Local: Onchain Africa
             </h1>
             <p className="text-base sm:text-lg lg:text-xl text-gray-300 leading-relaxed">
-              We're building blockchain solutions that solve real challenges for
-              African communities, bridging technology and local needs to
+              {"We're"} building blockchain solutions that solve real challenges
+              for African communities, bridging technology and local needs to
               onboard the next million users to the Onchain Economy.
             </p>
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
