@@ -114,12 +114,6 @@ How could blockchain help solve this?
 What would successful implementation achieve?
 ```
 
-## 🔗 Important Links
-
-- [Website](https://baseafricadao.xyz)
-- [Documentation](https://docs.baseafricadao.xyz)
-- [Community Discord](https://discord.gg/baseafricadao)
-- [Twitter](https://twitter.com/baseafricadao)
 
 ## 📊 Community Problem Solving
 
