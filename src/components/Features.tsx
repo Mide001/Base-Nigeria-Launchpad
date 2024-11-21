@@ -5,7 +5,7 @@ const Features = () => {
       {
         icon: <Star className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 transition-transform group-hover:scale-110 duration-300" />,
         title: "Community-Driven Innovation",
-        description: "Powered by developers, for developers"
+        description: "Powered by builders, for builders"
       },
       {
         icon: <Globe className="w-8 h-8 sm:w-10 sm:h-10 text-green-400 transition-transform group-hover:scale-110 duration-300" />,
