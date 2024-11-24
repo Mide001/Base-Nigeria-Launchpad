@@ -131,7 +131,7 @@ export default function Home() {
               </h1>
               <p className="text-base sm:text-lg lg:text-xl text-gray-300 leading-relaxed">
                 {"We're"} building blockchain solutions that solve real
-                challenges for African communities, bridging technology and
+                challenges for Nigerian communities, bridging technology and
                 local needs to onboard the next million users to the Onchain
                 Economy.
               </p>
