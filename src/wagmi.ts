@@ -2,7 +2,6 @@ import { http, cookieStorage, createConfig, createStorage } from "wagmi";
 import { base } from "wagmi/chains";
 import { coinbaseWallet } from "wagmi/connectors";
 
-
 export function getConfig() {
     return createConfig({
         chains: [base],
@@ -22,7 +21,6 @@ export function getConfig() {
         },
     });
 }
-
 declare module 'wagmi' {
     interface Register {
         config: ReturnType<typeof getConfig>;
