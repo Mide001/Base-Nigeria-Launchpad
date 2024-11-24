@@ -29,7 +29,7 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
   const [activeTab, setActiveTab] = useState<"details" | "comments">("details");
   const [newComment, setNewComment] = useState("");
   const [showLoginAlert, setShowLoginAlert] = useState(false);
-  
+
   const { address } = useAccount();
 
   const { data: proposalArray, isLoading } = useReadContract({
@@ -175,14 +175,16 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
         {showLoginAlert && (
           <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm">
             <Alert variant="destructive" className="bg-red-950 border-red-900">
-              <AlertTitle className="text-red-400">Authentication Required</AlertTitle>
+              <AlertTitle className="text-red-400">
+                Authentication Required
+              </AlertTitle>
               <AlertDescription className="text-red-200">
                 Please connect your wallet to support this proposal.
               </AlertDescription>
             </Alert>
           </div>
         )}
-        
+
         <div className="sticky top-0 z-10 bg-gray-900/80 backdrop-blur-sm">
           <div className="container mx-auto px-4 py-4 pt-6 md:pt-8">
             <Link
@@ -277,16 +279,28 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
                   <div className="flex flex-col items-center gap-2">
                     <button
                       className={`flex items-center justify-center w-12 h-12 rounded-full 
-                        ${address ? 'bg-emerald-500/20 hover:bg-emerald-500/30' : 'bg-gray-500/20'} 
-                        ${address ? 'text-emerald-400' : 'text-gray-400'} 
+                        ${
+                          address
+                            ? "bg-emerald-500/20 hover:bg-emerald-500/30"
+                            : "bg-gray-500/20"
+                        } 
+                        ${address ? "text-emerald-400" : "text-gray-400"} 
                         transition-all duration-300 
-                        ${address ? 'hover:scale-110 active:scale-95' : ''}`}
+                        ${address ? "hover:scale-110 active:scale-95" : ""}`}
                       onClick={onSupport}
-                      title={address ? "Support Proposal" : "Connect wallet to support"}
+                      title={
+                        address
+                          ? "Support Proposal"
+                          : "Connect wallet to support"
+                      }
                     >
                       <ThumbsUpIcon className="w-6 h-6" />
                     </button>
-                    <span className={`text-xs font-medium ${address ? 'text-emerald-400' : 'text-gray-400'}`}>
+                    <span
+                      className={`text-xs font-medium ${
+                        address ? "text-emerald-400" : "text-gray-400"
+                      }`}
+                    >
                       Support
                     </span>
                   </div>
@@ -327,7 +341,9 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
 
                 <div>
                   <textarea
-                    placeholder={address ? "Add a comment..." : "Connect wallet to comment"}
+                    placeholder={
+                      address ? "Add a comment..." : "Connect wallet to comment"
+                    }
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     className="w-full bg-transparent border border-gray-700 rounded-lg p-3 text-gray-300 focus:outline-none focus:border-emerald-500 transition-colors duration-300"
@@ -338,13 +354,13 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
                     <button
                       onClick={handleAddComment}
                       className={`${
-                        address 
-                          ? 'bg-emerald-600 hover:bg-emerald-500' 
-                          : 'bg-gray-600 cursor-not-allowed'
+                        address
+                          ? "bg-emerald-600 hover:bg-emerald-500"
+                          : "bg-gray-600 cursor-not-allowed"
                       } text-xs text-white px-4 py-2 rounded-lg transition-colors duration-300`}
                       disabled={!address}
                     >
-                      {address ? 'Add Comment' : 'Connect Wallet to Comment'}
+                      {address ? "Add Comment" : "Connect Wallet to Comment"}
                     </button>
                   </div>
                 </div>

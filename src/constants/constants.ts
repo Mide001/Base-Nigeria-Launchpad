@@ -1,5 +1,65 @@
 export const BaseAfricaDaoABI: any[] = [
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "proposalId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "content",
+				"type": "string"
+			}
+		],
+		"name": "addComment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "title",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "category",
+				"type": "string"
+			}
+		],
+		"name": "createProposal",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "proposalId",
+				"type": "uint256"
+			}
+		],
+		"name": "deleteProposal",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
@@ -103,19 +163,8 @@ export const BaseAfricaDaoABI: any[] = [
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "proposalId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "content",
-				"type": "string"
-			}
-		],
-		"name": "addComment",
+		"inputs": [],
+		"name": "renounceOwnership",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -123,22 +172,60 @@ export const BaseAfricaDaoABI: any[] = [
 	{
 		"inputs": [
 			{
-				"internalType": "string",
-				"name": "title",
-				"type": "string"
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "proposalId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum BaseAfricaDAO.ProposalStatus",
+				"name": "newStatus",
+				"type": "uint8"
+			},
+			{
+				"internalType": "address",
+				"name": "builderAddress",
+				"type": "address"
 			},
 			{
 				"internalType": "string",
-				"name": "description",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "category",
+				"name": "telegramUsername",
 				"type": "string"
 			}
 		],
-		"name": "createProposal",
+		"name": "updateProposalStatus",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "proposalId",
+				"type": "uint256"
+			}
+		],
+		"name": "upvoteProposal",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "activeProposalCount",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -146,20 +233,7 @@ export const BaseAfricaDaoABI: any[] = [
 				"type": "uint256"
 			}
 		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "proposalId",
-				"type": "uint256"
-			}
-		],
-		"name": "deleteProposal",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -322,68 +396,7 @@ export const BaseAfricaDaoABI: any[] = [
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "proposalId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "enum BaseAfricaDAO.ProposalStatus",
-				"name": "newStatus",
-				"type": "uint8"
-			},
-			{
-				"internalType": "address",
-				"name": "builderAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "telegramUsername",
-				"type": "string"
-			}
-		],
-		"name": "updateProposalStatus",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "proposalId",
-				"type": "uint256"
-			}
-		],
-		"name": "upvoteProposal",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	}
-];
+]
 
-export const BaseAfricaDaoAddress = "0x6A8Aa702c2AE0bdFFC3dE3E680888ADaa39b0597";
+export const BaseAfricaDaoAddress = "0x5adec6212ec2cc02f9ea3a89e180fcf1f2078b71";
