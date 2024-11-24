@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ThumbsUp, MessageCircle, ThumbsUpIcon } from "lucide-react";
-import { useReadContract, useWriteContract } from "wagmi";
+import { useReadContract, useWriteContract, useAccount } from "wagmi";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import Footer from "@/components/Footer";
 import { BaseAfricaDaoABI, BaseAfricaDaoAddress } from "@/constants/constants";
 
@@ -27,6 +28,9 @@ interface ProposalData {
 const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
   const [activeTab, setActiveTab] = useState<"details" | "comments">("details");
   const [newComment, setNewComment] = useState("");
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
+  
+  const { address } = useAccount();
 
   const { data: proposalArray, isLoading } = useReadContract({
     abi: BaseAfricaDaoABI,
@@ -96,7 +100,6 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
   ): string => {
     if (!str) return "";
     if (str.length <= frontChars + backChars) return str;
-
     return `${str.slice(0, frontChars)}...${str.slice(-backChars)}`;
   };
 
@@ -119,6 +122,12 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
   };
 
   const onSupport = async () => {
+    if (!address) {
+      setShowLoginAlert(true);
+      setTimeout(() => setShowLoginAlert(false), 3000); // Hide alert after 3 seconds
+      return;
+    }
+
     try {
       const transactionHash = await writeContractAsync({
         address: BaseAfricaDaoAddress,
@@ -134,6 +143,12 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
   };
 
   const handleAddComment = async () => {
+    if (!address) {
+      setShowLoginAlert(true);
+      setTimeout(() => setShowLoginAlert(false), 3000);
+      return;
+    }
+
     if (newComment.trim() === "") {
       alert("Comment cannot be empty.");
       return;
@@ -157,6 +172,17 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
   return (
     <>
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 text-white">
+        {showLoginAlert && (
+          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm">
+            <Alert variant="destructive" className="bg-red-950 border-red-900">
+              <AlertTitle className="text-red-400">Authentication Required</AlertTitle>
+              <AlertDescription className="text-red-200">
+                Please connect your wallet to support this proposal.
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
+        
         <div className="sticky top-0 z-10 bg-gray-900/80 backdrop-blur-sm">
           <div className="container mx-auto px-4 py-4 pt-6 md:pt-8">
             <Link
@@ -238,7 +264,6 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
             </button>
           </div>
 
-          {/* Tab Content */}
           <div className="bg-gray-800/50 rounded-xl p-6">
             {activeTab === "details" && (
               <div className="prose prose-invert max-w-none">
@@ -251,16 +276,17 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
                 <div className="flex items-center justify-center border-t border-gray-700 pt-6">
                   <div className="flex flex-col items-center gap-2">
                     <button
-                      className="flex items-center justify-center w-12 h-12 rounded-full 
-            bg-emerald-500/20 hover:bg-emerald-500/30 
-            text-emerald-400 transition-all duration-300 
-            hover:scale-110 active:scale-95"
+                      className={`flex items-center justify-center w-12 h-12 rounded-full 
+                        ${address ? 'bg-emerald-500/20 hover:bg-emerald-500/30' : 'bg-gray-500/20'} 
+                        ${address ? 'text-emerald-400' : 'text-gray-400'} 
+                        transition-all duration-300 
+                        ${address ? 'hover:scale-110 active:scale-95' : ''}`}
                       onClick={onSupport}
-                      title="Support Proposal"
+                      title={address ? "Support Proposal" : "Connect wallet to support"}
                     >
                       <ThumbsUpIcon className="w-6 h-6" />
                     </button>
-                    <span className="text-xs text-emerald-400 font-medium">
+                    <span className={`text-xs font-medium ${address ? 'text-emerald-400' : 'text-gray-400'}`}>
                       Support
                     </span>
                   </div>
@@ -301,18 +327,24 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
 
                 <div>
                   <textarea
-                    placeholder="Add a comment..."
+                    placeholder={address ? "Add a comment..." : "Connect wallet to comment"}
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     className="w-full bg-transparent border border-gray-700 rounded-lg p-3 text-gray-300 focus:outline-none focus:border-emerald-500 transition-colors duration-300"
                     rows={5}
+                    disabled={!address}
                   />
                   <div className="flex justify-end mt-2">
                     <button
                       onClick={handleAddComment}
-                      className="bg-emerald-600 hover:bg-emerald-500 text-xs text-white px-4 py-2 rounded-lg transition-colors duration-300"
+                      className={`${
+                        address 
+                          ? 'bg-emerald-600 hover:bg-emerald-500' 
+                          : 'bg-gray-600 cursor-not-allowed'
+                      } text-xs text-white px-4 py-2 rounded-lg transition-colors duration-300`}
+                      disabled={!address}
                     >
-                      Add Comment
+                      {address ? 'Add Comment' : 'Connect Wallet to Comment'}
                     </button>
                   </div>
                 </div>
