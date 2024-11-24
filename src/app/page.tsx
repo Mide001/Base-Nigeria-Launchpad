@@ -127,7 +127,7 @@ export default function Home() {
                 Open Source Community Project
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-emerald-300 leading-tight">
-                Think Global, Solve Local: Onchain Africa
+                Think Global, Solve Local: Onchain Nigeria
               </h1>
               <p className="text-base sm:text-lg lg:text-xl text-gray-300 leading-relaxed">
                 {"We're"} building blockchain solutions that solve real

@@ -1,12 +1,12 @@
 # Base Nigeria Idea Launchpad 🌍
 
-Think Global, Solve Local: Onchain Africa
+Think Global, Solve Local: Onchain Nigeria Idea Launchpad is a decentralized platform where Nigerian developers, entrepreneurs, and innovators collaborate to identify and solve critical technological challenges using blockchain technology. Our mission is to bridge technology and local needs to onboard the next million users to the Onchain Economy.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 ![Status](https://img.shields.io/badge/Status-Alpha-orange)
 
-Base Nigeria Idea Launchpad is a decentralized platform where African developers, entrepreneurs, and innovators collaborate to identify and solve critical technological challenges using blockchain technology. Our mission is to bridge technology and local needs to onboard the next million users to the Onchain Economy.
+Base Nigeria Idea Launchpad is a decentralized platform where Nigerian developers, entrepreneurs, and innovators collaborate to identify and solve critical technological challenges using blockchain technology. Our mission is to bridge technology and local needs to onboard the next million users to the Onchain Economy.
 
 ## 🎯 Vision
 
@@ -148,5 +148,5 @@ If you like what we're doing, please:
 ---
 
 <div align="center">
-  Built with ❤️ by the African Developer Community
+  Built with ❤️ by the Nigerian Developer Community
 </div>

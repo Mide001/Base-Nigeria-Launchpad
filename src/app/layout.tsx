@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Base Nigeria Idea Launchpad",
   description:
-    "A decentralized platform where African builders, developers, entrepreneurs, and innovators collaborate to identify and solve critical technological challenges using blockchain technology.",
+    "A decentralized platform where Nigerian builders, developers, entrepreneurs, and innovators collaborate to identify and solve critical technological challenges using blockchain technology.",
 };
 
 export default function RootLayout({
