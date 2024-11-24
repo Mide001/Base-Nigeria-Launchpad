@@ -1,14 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  ThumbsUp,
-  MessageCircle,
-  ChevronUp,
-  ChevronDown,
-} from "lucide-react";
-import comments from "./comments.json";
+import { ArrowLeft, ThumbsUp, MessageCircle, ThumbsUpIcon } from "lucide-react";
+import { useReadContract, useWriteContract } from "wagmi";
+import Footer from "@/components/Footer";
+import { BaseAfricaDaoABI, BaseAfricaDaoAddress } from "@/constants/constants";
 
 enum ProposalStatus {
   Active,
@@ -17,48 +13,66 @@ enum ProposalStatus {
   Rejected,
 }
 
-interface Proposal {
-  id: number;
+type ProposalArray = [string, string, string, string, bigint, number];
+
+interface ProposalData {
+  author: string;
   title: string;
   description: string;
-  author: string;
+  category: string;
   status: ProposalStatus;
   votes: number;
-  votesFor: number;
-  votesAgainst: number;
-  comments: number;
-  date: number;
-  category: string;
-  implementationTarget?: number;
 }
-
-const proposals: Proposal[] = [
-  {
-    id: 1,
-    title: "Blockchain-Based Digital Identity System",
-    description:
-      "A comprehensive proposal to implement a decentralized digital identity system using blockchain technology to enhance security and user control over personal information.",
-    author: "0xABCD1234UserWallet",
-    status: ProposalStatus.Active,
-    votes: 156,
-    votesFor: 120,
-    votesAgainst: 36,
-    comments: 23,
-    date: 1710460800,
-    category: "Identity & Security",
-    implementationTarget: 1725907200,
-  },
-];
 
 const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
   const [activeTab, setActiveTab] = useState<"details" | "comments">("details");
-  const [showDetails, setShowDetails] = useState(false);
+  const [newComment, setNewComment] = useState("");
 
-  const proposal = proposals.find((p) => p.id === parseInt(params.id));
+  const { data: proposalArray, isLoading } = useReadContract({
+    abi: BaseAfricaDaoABI,
+    address: BaseAfricaDaoAddress,
+    functionName: "getProposal",
+    args: [params.id],
+  });
 
-  if (!proposal) {
-    return <div className="text-center text-red-500">Proposal Not Found</div>;
+  const { data: commentsData, isLoading: isCommentsLoading } = useReadContract({
+    abi: BaseAfricaDaoABI,
+    address: BaseAfricaDaoAddress,
+    functionName: "getComments",
+    args: [params.id],
+  });
+
+  const { data: hash, writeContractAsync } = useWriteContract();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 text-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-emerald-500"></div>
+      </div>
+    );
   }
+
+  if (!proposalArray) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 text-white flex items-center justify-center">
+        <div className="text-red-500">Proposal Not Found</div>
+      </div>
+    );
+  }
+
+  const [author, title, description, category, votes, status] =
+    proposalArray as ProposalArray;
+
+  const cleanCategory = category.replace(/\0/g, "").trim();
+
+  const proposal: ProposalData = {
+    author,
+    title,
+    description,
+    category: cleanCategory,
+    votes: Number(votes),
+    status: Number(status) as ProposalStatus,
+  };
 
   const getStatusColor = (status: ProposalStatus) => {
     switch (status) {
@@ -75,196 +89,240 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
     }
   };
 
+  const truncateAddress = (
+    str: string,
+    frontChars = 4,
+    backChars = 3
+  ): string => {
+    if (!str) return "";
+    if (str.length <= frontChars + backChars) return str;
+
+    return `${str.slice(0, frontChars)}...${str.slice(-backChars)}`;
+  };
+
+  const processCommentContent = (content: string) => {
+    if (!content || !content.startsWith("0x")) {
+      console.error(
+        "Invalid content format. Expected a hex string starting with '0x'."
+      );
+      return "";
+    }
+
+    try {
+      return Buffer.from(content.slice(2), "hex")
+        .toString("utf-8")
+        .replace(/\u0000/g, "");
+    } catch (error) {
+      console.error("Error processing comment content:", error);
+      return "";
+    }
+  };
+
+  const onSupport = async () => {
+    try {
+      const transactionHash = await writeContractAsync({
+        address: BaseAfricaDaoAddress,
+        abi: BaseAfricaDaoABI,
+        functionName: "upvoteProposal",
+        args: [params.id],
+      });
+
+      console.log("Supporting proposal:", transactionHash);
+    } catch (error) {
+      console.error("Error supporting proposal:", error);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (newComment.trim() === "") {
+      alert("Comment cannot be empty.");
+      return;
+    }
+
+    try {
+      const transactionHash = await writeContractAsync({
+        address: BaseAfricaDaoAddress,
+        abi: BaseAfricaDaoABI,
+        functionName: "addComment",
+        args: [params.id, newComment],
+      });
+
+      console.log(transactionHash);
+      setNewComment("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 text-white">
-      <div className="sticky top-0 z-10 bg-gray-900/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 pt-6 md:pt-8">
-          <Link
-            href="/proposals"
-            className="flex items-center text-sm text-gray-500 hover:text-emerald-300 transition-colors group"
-          >
-            <ArrowLeft className="mr-1 w-4 h-4 group-hover:translate-x-[-4px] transition-transform" />
-            Back
-          </Link>
-        </div>
-      </div>
-      <main className="container mx-auto px-4 py-8">
-        <div className="bg-gray-800/50 rounded-xl border border-gray-700 p-6 mb-6">
-          <div className="mb-4">
-            <div className="flex flex-wrap gap-4 justify-between items-start mb-4">
-              <div>
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
-                    proposal.status
-                  )}`}
-                >
-                  {ProposalStatus[proposal.status]}
-                </span>
-                <h2 className="text-xl font-bold text-emerald-300 mt-2">
-                  {proposal.title}
-                </h2>
-              </div>
-            </div>
-
-            {/* Voting Section */}
-            <div className="flex flex-wrap gap-6 pt-4 border-t border-gray-700">
-              <div className="flex items-center gap-2 text-gray-400">
-                <ThumbsUp className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-xs sm:text-base font-medium">
-                  {proposal.votes} Votes
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-emerald-400">
-                <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-xs sm:text-base font-medium sm:block hidden">
-                  Votes For
-                </span>
-                <span className="text-xs sm:text-base font-medium">
-                  {proposal.votesFor}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-red-400">
-                <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-xs sm:text-base font-medium sm:block hidden">
-                  Votes Against
-                </span>
-                <span className="text-xs sm:text-base font-medium">
-                  {proposal.votesAgainst}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-400">
-                <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-xs sm:text-base font-medium">
-                  {proposal.comments} Comments
-                </span>
-              </div>
-            </div>
+    <>
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 text-white">
+        <div className="sticky top-0 z-10 bg-gray-900/80 backdrop-blur-sm">
+          <div className="container mx-auto px-4 py-4 pt-6 md:pt-8">
+            <Link
+              href="/proposals"
+              className="flex items-center text-sm text-gray-500 hover:text-emerald-300 transition-colors group"
+            >
+              <ArrowLeft className="mr-1 w-4 h-4 group-hover:translate-x-[-4px] transition-transform" />
+              Back
+            </Link>
           </div>
         </div>
-
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6">
-          <button
-            onClick={() => setActiveTab("details")}
-            className={`text-xs sm:text-base px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 ${
-              activeTab === "details"
-                ? "bg-emerald-500/20 text-emerald-400"
-                : "text-gray-400 hover:bg-gray-800"
-            }`}
-          >
-            Details
-          </button>
-          <button
-            onClick={() => setActiveTab("comments")}
-            className={`text-xs sm:text-base px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 ${
-              activeTab === "comments"
-                ? "bg-emerald-500/20 text-emerald-400"
-                : "text-gray-400 hover:bg-gray-800"
-            }`}
-          >
-            Comments
-          </button>
-        </div>
-
-        {/* Tab Content */}
-        <div className="bg-gray-800/50 rounded-xl p-6">
-          {activeTab === "details" && (
-            <div className="prose prose-invert max-w-none">
-              <h3 className="text-emerald-300">Proposal Description</h3>
-              <p>{proposal.description}</p>
-            </div>
-          )}
-
-          {activeTab === "comments" && (
-            <div className="space-y-4">
-              {comments.length > 0 ? (
-                comments.map((comment) => (
-                  <div
-                    key={comment.id}
-                    className="bg-gray-800/50 rounded-lg p-4"
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-emerald-400">
-                          {comment.author}
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          {new Date(comment.date).toLocaleDateString()}
-                        </span>
-                      </div>
-                     
-                    </div>
-                    <p className="text-gray-300 text-sm">{comment.content}</p>
-                    {comment.replies > 0 && (
-                      <div className="text-xs text-gray-400 mt-2">
-                        {comment.replies} repl
-                        {comment.replies === 1 ? "y" : "ies"}
-                      </div>
-                    )}
+        <main className="container mx-auto px-4 py-8">
+          <div className="bg-gray-800/50 rounded-xl border border-gray-700 p-6 mb-6">
+            <div className="mb-4">
+              <div className="flex flex-wrap gap-4 justify-between items-start mb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                        proposal.status
+                      )}`}
+                    >
+                      {ProposalStatus[proposal.status]}
+                    </span>
+                    <span className="text-emerald-400">
+                      {proposal.category}
+                    </span>
                   </div>
-                ))
-              ) : (
-                <p className="text-center text-gray-400">
-                  No comments yet. Be the first to comment!
-                </p>
-              )}
-            </div>
-          )}
-          <div className="bg-gray-700/30 rounded-lg p-4">
-            <textarea
-              placeholder="Add a comment..."
-              className="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-gray-300 focus:outline-none focus:border-emerald-500 transition-colors duration-300"
-              rows={3}
-            />
-            <div className="flex justify-end mt-2">
-              <button className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg transition-colors duration-300">
-                Post Comment
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Additional Details Section */}
-        <div className="bg-gray-800/50 rounded-xl border border-gray-700 mt-6">
-          <button
-            onClick={() => setShowDetails(!showDetails)}
-            className="w-full flex justify-between items-center p-4 border-b border-gray-700"
-          >
-            <span className="text-emerald-300">
-              Additional Proposal Information
-            </span>
-            {showDetails ? (
-              <ChevronUp className="text-white" />
-            ) : (
-              <ChevronDown className="text-white" />
-            )}
-          </button>
-
-          {showDetails && (
-            <div className="p-4 space-y-2">
-              <div className="flex justify-between text-gray-400">
-                <span>Category</span>
-                <span className="text-emerald-400">{proposal.category}</span>
+                  <h2 className="text-xl font-bold text-emerald-300 mt-2">
+                    {proposal.title}
+                  </h2>
+                </div>
               </div>
-              {proposal.implementationTarget && (
-                <div className="flex justify-between text-gray-400">
-                  <span>Target Implementation</span>
-                  <span className="text-emerald-400">
-                    {new Date(
-                      proposal.implementationTarget * 1000
-                    ).toLocaleDateString()}
+
+              <div className="flex flex-wrap gap-6 pt-4 border-t border-gray-700">
+                <div className="flex items-center gap-2 text-gray-400">
+                  <ThumbsUp className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-xs sm:text-base font-medium">
+                    {proposal.votes} Votes
                   </span>
                 </div>
-              )}
-              <div className="flex justify-between text-gray-400">
-                <span>Total Votes</span>
-                <span className="text-emerald-400">{proposal.votes}</span>
+                <div className="flex items-center gap-2 text-gray-400">
+                  {isCommentsLoading ? (
+                    <></>
+                  ) : (
+                    <>
+                      <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="text-xs sm:text-base font-medium">
+                        {commentsData?.length} Comments
+                      </span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
-          )}
-        </div>
-      </main>
-    </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => setActiveTab("details")}
+              className={`text-xs sm:text-base px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 ${
+                activeTab === "details"
+                  ? "bg-emerald-500/20 text-emerald-400"
+                  : "text-gray-400 hover:bg-gray-800"
+              }`}
+            >
+              Details
+            </button>
+            <button
+              onClick={() => setActiveTab("comments")}
+              className={`text-xs sm:text-base px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 ${
+                activeTab === "comments"
+                  ? "bg-emerald-500/20 text-emerald-400"
+                  : "text-gray-400 hover:bg-gray-800"
+              }`}
+            >
+              Comments
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          <div className="bg-gray-800/50 rounded-xl p-6">
+            {activeTab === "details" && (
+              <div className="prose prose-invert max-w-none">
+                <h3 className="text-emerald-300 text-xl font-semibold tracking-wide mb-4 uppercase">
+                  PROPOSAL DESCRIPTION
+                </h3>
+                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap text-base mb-6">
+                  {proposal.description}
+                </p>
+                <div className="flex items-center justify-center border-t border-gray-700 pt-6">
+                  <div className="flex flex-col items-center gap-2">
+                    <button
+                      className="flex items-center justify-center w-12 h-12 rounded-full 
+            bg-emerald-500/20 hover:bg-emerald-500/30 
+            text-emerald-400 transition-all duration-300 
+            hover:scale-110 active:scale-95"
+                      onClick={onSupport}
+                      title="Support Proposal"
+                    >
+                      <ThumbsUpIcon className="w-6 h-6" />
+                    </button>
+                    <span className="text-xs text-emerald-400 font-medium">
+                      Support
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "comments" && (
+              <div className="space-y-4">
+                {commentsData && commentsData.length > 0 ? (
+                  commentsData.map((comment, index) => (
+                    <div
+                      key={index}
+                      className="border border-gray-700 rounded-lg p-4"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-emerald-400">
+                            {truncateAddress(comment.commenter)}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {new Date(
+                              Number(comment.timestamp) * 1000
+                            ).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-gray-300 text-sm">
+                        {processCommentContent(comment.content)}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-gray-400">
+                    No comments yet. Be the first to comment!
+                  </p>
+                )}
+
+                <div>
+                  <textarea
+                    placeholder="Add a comment..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="w-full bg-transparent border border-gray-700 rounded-lg p-3 text-gray-300 focus:outline-none focus:border-emerald-500 transition-colors duration-300"
+                    rows={5}
+                  />
+                  <div className="flex justify-end mt-2">
+                    <button
+                      onClick={handleAddComment}
+                      className="bg-emerald-600 hover:bg-emerald-500 text-xs text-white px-4 py-2 rounded-lg transition-colors duration-300"
+                    >
+                      Add Comment
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
+      <Footer />
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-# Base Africa DAO 🌍
+# Base Nigeria Idea Launchpad 🌍
 
 Think Global, Solve Local: Onchain Africa
 
@@ -6,11 +6,11 @@ Think Global, Solve Local: Onchain Africa
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 ![Status](https://img.shields.io/badge/Status-Alpha-orange)
 
-Base Africa DAO is a decentralized platform where African developers, entrepreneurs, and innovators collaborate to identify and solve critical technological challenges using blockchain technology. Our mission is to bridge technology and local needs to onboard the next million users to the Onchain Economy.
+Base Nigeria Idea Launchpad is a decentralized platform where African developers, entrepreneurs, and innovators collaborate to identify and solve critical technological challenges using blockchain technology. Our mission is to bridge technology and local needs to onboard the next million users to the Onchain Economy.
 
 ## 🎯 Vision
 
-We believe in the power of local solutions to drive global blockchain adoption. Base Africa DAO enables community members to:
+We believe in the power of local solutions to drive global blockchain adoption. Base Nigeria Idea Launchpad enables community members to:
 - Propose real-world problems that need blockchain solutions
 - Vote on which problems should be prioritized
 - Collaborate on building solutions
@@ -63,7 +63,7 @@ Visit `http://localhost:3000` to see the application.
 
 ## 🤝 Contributing
 
-We love contributions! There are several ways you can contribute to Base Africa DAO:
+We love contributions! There are several ways you can contribute to Base Nigeria Idea Launchpad:
 
 ### 1. Propose Problems
 - Create issues describing local challenges that need blockchain solutions
@@ -117,7 +117,7 @@ What would successful implementation achieve?
 
 ## 📊 Community Problem Solving
 
-Base Africa DAO operates on a community-driven model where:
+Base Nigeria Idea Launchpad operates on a community-driven model where:
 1. Anyone can submit problem proposals to highlight local challenges
 2. Community members discuss and provide feedback on proposals
 3. Builders can freely choose which problems to work on
@@ -127,7 +127,7 @@ This open approach ensures that builders can focus on problems they're passionat
 
 ## 🌟 Contributors
 
-Thanks to these wonderful people who make Base Africa DAO possible!
+Thanks to these wonderful people who make Base Nigeria Idea Launchpad possible!
 
 <a href="https://github.com/your-org/base-africa-dao/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=your-org/base-africa-dao" />

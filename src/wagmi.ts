@@ -8,7 +8,7 @@ export function getConfig() {
         chains: [base],
         connectors: [
             coinbaseWallet({
-                appName: "Base Africa DAO",
+                appName: "Base Nigeria Idea Launchpad",
                 preference: 'smartWalletOnly',
                 version: '4',
             }),

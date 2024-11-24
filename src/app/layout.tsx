@@ -1,3 +1,4 @@
+import "@coinbase/onchainkit/styles.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -6,9 +7,9 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Base Africa DAO",
+  title: "Base Nigeria Idea Launchpad",
   description:
-    "A decentralized platform where African developers, entrepreneurs, and innovators collaborate to identify and solve critical technological challenges using blockchain technology.",
+    "A decentralized platform where African builders, developers, entrepreneurs, and innovators collaborate to identify and solve critical technological challenges using blockchain technology.",
 };
 
 export default function RootLayout({

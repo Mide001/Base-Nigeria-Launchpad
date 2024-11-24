@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Features from "@/components/Features";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -23,12 +24,11 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       {/* Navbar */}
       <div className="sticky top-0 z-50 bg-gray-800/90 backdrop-blur-md border-b border-gray-700">
-        {/* Header content remains the same */}
         <div className="container mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <Terminal className="text-emerald-400 w-6 h-6 sm:w-8 sm:h-8" />
             <span className="text-xl sm:text-2xl font-bold text-emerald-300">
-              Base Africa DAO
+              Base Nigeria
             </span>
           </div>
 
@@ -73,13 +73,12 @@ export default function Home() {
             onClick={toggleSidebar}
           />
 
-          {/* Sidebar */}
           <div className="fixed right-0 top-0 h-auto w-full bg-gray-800 p-6 shadow-xl transform transition-transform rounded-b-2xl">
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center space-x-3">
                 <Terminal className="text-emerald-400 w-4 h-4 sm:w-8 sm:h-8" />
                 <span className="text-base sm:text-2xl font-bold text-emerald-300">
-                  Base Africa DAO
+                  Base Nigeria
                 </span>
               </div>
               <button
@@ -116,7 +115,6 @@ export default function Home() {
 
       <div className="flex-grow flex flex-col">
         <main className="hero-gradient relative overflow-hidden flex-grow">
-          {/* Background Elements */}
           <div className="absolute inset-0 z-0">
             <div className="absolute top-20 right-10 w-48 sm:w-72 h-48 sm:h-72 bg-emerald-500/20 rounded-full blur-3xl animate-pulse" />
             <div className="absolute -bottom-20 -left-20 w-64 sm:w-96 h-64 sm:h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse-slow" />
@@ -158,8 +156,6 @@ export default function Home() {
           </div>
         </main>
       </div>
-
-      {/* Contribution Section */}
       <section id="contribute" className="bg-gray-800 py-8 sm:py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-300 mb-6 sm:mb-8">
@@ -218,26 +214,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 border-t border-gray-700 py-6 sm:py-8 mt-auto">
-        <div className="container mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-          <div className="flex items-center space-x-3">
-            <Terminal className="text-emerald-400 w-5 h-5 sm:w-6 sm:h-6" />
-            <span className="text-sm sm:text-base font-bold text-emerald-300">
-              Base Africa DAO
-            </span>
-          </div>
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
-            <a href="#" className="text-gray-400 hover:text-emerald-300">
-              Code of Conduct
-            </a>
-            <a href="#" className="text-gray-400 hover:text-emerald-300">
-              Contributing Guidelines
-            </a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
