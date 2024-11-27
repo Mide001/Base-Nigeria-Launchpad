@@ -33,6 +33,11 @@ export const BaseAfricaDaoABI: any[] = [
 				"internalType": "string",
 				"name": "category",
 				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "telegramUsername",
+				"type": "string"
 			}
 		],
 		"name": "createProposal",
@@ -163,6 +168,25 @@ export const BaseAfricaDaoABI: any[] = [
 		"type": "event"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "voter",
+				"type": "address"
+			}
+		],
+		"name": "ProposalUpvoted",
+		"type": "event"
+	},
+	{
 		"inputs": [],
 		"name": "renounceOwnership",
 		"outputs": [],
@@ -195,13 +219,13 @@ export const BaseAfricaDaoABI: any[] = [
 				"type": "uint8"
 			},
 			{
-				"internalType": "address",
-				"name": "builderAddress",
-				"type": "address"
+				"internalType": "string",
+				"name": "builderFarcasterUsername",
+				"type": "string"
 			},
 			{
 				"internalType": "string",
-				"name": "telegramUsername",
+				"name": "builderTelegramUsername",
 				"type": "string"
 			}
 		],
@@ -263,9 +287,9 @@ export const BaseAfricaDaoABI: any[] = [
 						"type": "string"
 					},
 					{
-						"internalType": "string",
+						"internalType": "bytes32",
 						"name": "category",
-						"type": "string"
+						"type": "bytes32"
 					},
 					{
 						"internalType": "uint96",
@@ -281,6 +305,21 @@ export const BaseAfricaDaoABI: any[] = [
 						"internalType": "enum BaseAfricaDAO.ProposalStatus",
 						"name": "status",
 						"type": "uint8"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "telegramUsername",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "builderTelegramUsername",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "builderFarcasterUsername",
+						"type": "bytes32"
 					}
 				],
 				"internalType": "struct BaseAfricaDAO.ProposalView[]",
@@ -309,9 +348,9 @@ export const BaseAfricaDaoABI: any[] = [
 						"type": "address"
 					},
 					{
-						"internalType": "bytes32",
+						"internalType": "string",
 						"name": "content",
-						"type": "bytes32"
+						"type": "string"
 					},
 					{
 						"internalType": "uint256",
@@ -353,9 +392,9 @@ export const BaseAfricaDaoABI: any[] = [
 				"type": "string"
 			},
 			{
-				"internalType": "string",
+				"internalType": "bytes32",
 				"name": "category",
-				"type": "string"
+				"type": "bytes32"
 			},
 			{
 				"internalType": "uint256",
@@ -366,6 +405,45 @@ export const BaseAfricaDaoABI: any[] = [
 				"internalType": "enum BaseAfricaDAO.ProposalStatus",
 				"name": "status",
 				"type": "uint8"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "telegramUsername",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "builderTelegramUsername",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "builderFarcasterUsername",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "proposalId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "hasUserVoted",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -397,6 +475,7 @@ export const BaseAfricaDaoABI: any[] = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-]
+];
 
-export const BaseAfricaDaoAddress = "0x5adec6212ec2cc02f9ea3a89e180fcf1f2078b71";
+export const BaseAfricaDaoAddress =
+  "0x6dE59f602ed2b755Ad7EcD9c14f33C98A96c8C03";

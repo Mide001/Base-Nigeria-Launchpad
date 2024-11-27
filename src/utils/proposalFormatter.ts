@@ -7,20 +7,26 @@ interface ContractProposal {
     upvotes: bigint
     proposer: string
     category: string
-    creationDate: number
+    telegramUsername: string;
+    creationDate: number;
+    builderTelegramUsername: string;
+    builderFarcasterUsername: string;
   }
   
   // Define the frontend proposal structure
   interface FormattedProposal {
-    id: number
-    title: string
-    description: string
-    status: ProposalStatus
-    votes: number
-    comments: number
-    date: string
-    author: string
-    category: string
+    id: number;
+    title: string;
+    description: string;
+    status: ProposalStatus;
+    votes: number;
+    comments: number;
+    date: string;
+    author: string;
+    category: string;
+    telegramUsername: string;
+    builderTelegramUsername: string;
+    builderFarcasterUsername: string;
   }
   
   // Status mapping from contract to frontend enum
@@ -53,7 +59,7 @@ interface ContractProposal {
   
   export const formatProposals = (contractProposals: ContractProposal[]): FormattedProposal[] => {
     if (!contractProposals) return []
-    
+
     return contractProposals.map((proposal) => {
       // Convert bigint to number safely
       const idNumber = Number(proposal.id)
@@ -68,7 +74,10 @@ interface ContractProposal {
         comments: 0, 
         date: new Date(proposal.creationDate * 1000).toLocaleDateString(),
         author: `${proposal.proposer.slice(0, 6)}...${proposal.proposer.slice(-4)}`,
-        category: cleanString(proposal.category)
+        category: proposal.category,
+        telegramUsername: proposal.telegramUsername,
+        builderTelegramUsername: proposal.builderTelegramUsername,
+        builderFarcasterUsername: proposal.builderFarcasterUsername,
       }
     })
   }

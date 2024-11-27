@@ -1,20 +1,39 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ThumbsUp, MessageCircle, ThumbsUpIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  User,
+  ThumbsUp,
+  MessageCircle,
+  MessageSquare,
+  ThumbsUpIcon,
+  PlusCircle,
+} from "lucide-react";
 import { useReadContract, useWriteContract, useAccount } from "wagmi";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import UpdateStatusModal from "@/components/UpdateStatusModal";
 import Footer from "@/components/Footer";
 import { BaseAfricaDaoABI, BaseAfricaDaoAddress } from "@/constants/constants";
 
 enum ProposalStatus {
   Active,
-  UnderReview,
+  InDevelopment,
   Implemented,
   Rejected,
 }
 
-type ProposalArray = [string, string, string, string, bigint, number];
+type ProposalArray = [
+  string,
+  string,
+  string,
+  string,
+  bigint,
+  number,
+  string,
+  string,
+  string
+];
 
 interface ProposalData {
   author: string;
@@ -23,10 +42,16 @@ interface ProposalData {
   category: string;
   status: ProposalStatus;
   votes: number;
+  telegramUsername: string;
+  builderTelegramUsername: string;
+  builderFarcasterUsername: string;
 }
 
 const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
-  const [activeTab, setActiveTab] = useState<"details" | "comments">("details");
+  const [activeTab, setActiveTab] = useState<
+    "details" | "comments" | "builderDetails"
+  >("details");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [showLoginAlert, setShowLoginAlert] = useState(false);
 
@@ -64,8 +89,17 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
     );
   }
 
-  const [author, title, description, category, votes, status] =
-    proposalArray as ProposalArray;
+  const [
+    author,
+    title,
+    description,
+    category,
+    votes,
+    status,
+    telegramUsername,
+    builderTelegramUsername,
+    builderFarcasterUsername,
+  ] = proposalArray as ProposalArray;
 
   const cleanCategory = category.replace(/\0/g, "").trim();
 
@@ -76,6 +110,9 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
     category: cleanCategory,
     votes: Number(votes),
     status: Number(status) as ProposalStatus,
+    telegramUsername,
+    builderTelegramUsername,
+    builderFarcasterUsername,
   };
 
   const getStatusColor = (status: ProposalStatus) => {
@@ -84,7 +121,7 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
         return "bg-emerald-500/15 text-emerald-400 border-emerald-500/20";
       case ProposalStatus.Implemented:
         return "bg-blue-500/15 text-blue-400 border-blue-500/20";
-      case ProposalStatus.UnderReview:
+      case ProposalStatus.InDevelopment:
         return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
       case ProposalStatus.Rejected:
         return "bg-gray-500/10 text-gray-400 border-gray-500/20";
@@ -103,7 +140,7 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
     return `${str.slice(0, frontChars)}...${str.slice(-backChars)}`;
   };
 
-  const processCommentContent = (content: string) => {
+  const processByteToString = (content: string) => {
     if (!content || !content.startsWith("0x")) {
       console.error(
         "Invalid content format. Expected a hex string starting with '0x'."
@@ -124,7 +161,7 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
   const onSupport = async () => {
     if (!address) {
       setShowLoginAlert(true);
-      setTimeout(() => setShowLoginAlert(false), 3000); // Hide alert after 3 seconds
+      setTimeout(() => setShowLoginAlert(false), 3000);
       return;
     }
 
@@ -188,7 +225,7 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
         <div className="sticky top-0 z-10 bg-gray-900/80 backdrop-blur-sm">
           <div className="container mx-auto px-4 py-4 pt-6 md:pt-8">
             <Link
-              href="/proposals"
+              href="/ideas"
               className="flex items-center text-sm text-gray-500 hover:text-emerald-300 transition-colors group"
             >
               <ArrowLeft className="mr-1 w-4 h-4 group-hover:translate-x-[-4px] transition-transform" />
@@ -210,7 +247,7 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
                       {ProposalStatus[proposal.status]}
                     </span>
                     <span className="text-emerald-400">
-                      {proposal.category}
+                      {processByteToString(proposal.category)}
                     </span>
                   </div>
                   <h2 className="text-xl font-bold text-emerald-300 mt-2">
@@ -243,27 +280,57 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setActiveTab("details")}
-              className={`text-xs sm:text-base px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 ${
-                activeTab === "details"
-                  ? "bg-emerald-500/20 text-emerald-400"
-                  : "text-gray-400 hover:bg-gray-800"
-              }`}
-            >
-              Details
-            </button>
-            <button
-              onClick={() => setActiveTab("comments")}
-              className={`text-xs sm:text-base px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 ${
-                activeTab === "comments"
-                  ? "bg-emerald-500/20 text-emerald-400"
-                  : "text-gray-400 hover:bg-gray-800"
-              }`}
-            >
-              Comments
-            </button>
+          <div className="flex justify-between items-center gap-2 mb-6">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab("details")}
+                className={`text-xs sm:text-base px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 ${
+                  activeTab === "details"
+                    ? "bg-emerald-500/20 text-emerald-400"
+                    : "text-gray-400 hover:bg-gray-800"
+                }`}
+              >
+                Details
+              </button>
+              <button
+                onClick={() => setActiveTab("comments")}
+                className={`text-xs sm:text-base px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 ${
+                  activeTab === "comments"
+                    ? "bg-emerald-500/20 text-emerald-400"
+                    : "text-gray-400 hover:bg-gray-800"
+                }`}
+              >
+                Comments
+              </button>
+              {proposal.status === ProposalStatus.InDevelopment && (
+                <button
+                  onClick={() => setActiveTab("builderDetails")}
+                  className={`text-xs sm:text-base px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-300 ${
+                    activeTab === "builderDetails"
+                      ? "bg-emerald-500/20 text-emerald-400"
+                      : "text-gray-400 hover:bg-gray-800"
+                  }`}
+                >
+                  Builder Details
+                </button>
+              )}
+            </div>
+
+            {address && author && address === author && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="hidden sm:flex items-center justify-center gap-2 px-4 h-10 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 hover:scale-105 text-white rounded-xl transition-all duration-300 transform"
+              >
+                <PlusCircle className="w-5 h-5" />
+                <span className="text-sm whitespace-nowrap">Update Status</span>
+              </button>
+            )}
+            <UpdateStatusModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              proposalId={params.id}
+              currentStatus={proposal.status}
+            />
           </div>
 
           <div className="bg-gray-800/50 rounded-xl p-6">
@@ -328,9 +395,7 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
                           </span>
                         </div>
                       </div>
-                      <p className="text-gray-300 text-sm">
-                        {processCommentContent(comment.content)}
-                      </p>
+                      <p className="text-gray-300 text-sm">{comment.content}</p>
                     </div>
                   ))
                 ) : (
@@ -366,6 +431,64 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
                 </div>
               </div>
             )}
+
+            {activeTab === "builderDetails" &&
+              proposal.status === ProposalStatus.InDevelopment && (
+                <div className="space-y-4">
+                  <h3 className="text-emerald-300 text-xl font-semibold tracking-wide mb-4 uppercase">
+                    BUILDER CONTACT
+                  </h3>
+                  <div className="bg-gray-800/50 rounded-xl p-6 space-y-4">
+                    <div className="flex items-center gap-4">
+                      <span className="text-gray-400 font-medium w-32">
+                        Telegram
+                      </span>
+                      <span className="text-emerald-300">
+                        {processByteToString(proposal.builderTelegramUsername)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-4 border-t border-gray-700 pt-4">
+                      <span className="text-gray-400 font-medium w-32">
+                        Farcaster
+                      </span>
+                      <span className="text-emerald-300">
+                        {processByteToString(proposal.builderFarcasterUsername)}
+                      </span>
+                    </div>
+
+                    <div className="border-t border-gray-700 pt-4">
+                      <p className="text-gray-300 text-sm mb-3">
+                        Interested in this project? Reach out to collaborate or
+                        get more details:
+                      </p>
+                      <div className="flex gap-3">
+                        <a
+                          href={`https://t.me/${processByteToString(
+                            proposal.builderTelegramUsername
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-all"
+                        >
+                          <MessageSquare className="w-4 h-4" />
+                          Message on Telegram
+                        </a>
+                        <a
+                          href={`https://warpcast.com/${processByteToString(
+                            proposal.builderFarcasterUsername
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-all"
+                        >
+                          <User className="w-4 h-4" />
+                          Connect on Farcaster
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
           </div>
         </main>
       </div>

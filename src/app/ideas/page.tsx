@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import {
-  Terminal,
   ArrowRight,
   ThumbsUp,
   MessageCircle,
@@ -11,6 +10,8 @@ import {
   Search,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+import Logo from "@/assets/BASE-NIGERIA-LOGO.png";
 import NewProposalModal from "@/components/NewProposalModal";
 import FilterModal from "@/components/FilterModal";
 import Footer from "@/components/Footer";
@@ -66,12 +67,11 @@ export default function Proposals() {
 
   const { address } = useAccount();
 
-  const { data: fetchedProposals, isLoading } =
-    useReadContract({
-      abi: BaseAfricaDaoABI,
-      address: BaseAfricaDaoAddress,
-      functionName: "getAllProposals",
-    });
+  const { data: fetchedProposals, isLoading } = useReadContract({
+    abi: BaseAfricaDaoABI,
+    address: BaseAfricaDaoAddress,
+    functionName: "getAllProposals",
+  });
 
   const formattedProposals = useMemo(() => {
     if (!fetchedProposals) return [];
@@ -81,12 +81,55 @@ export default function Proposals() {
   const filteredProposals = useMemo(() => {
     if (isLoading) return [];
 
-    return formattedProposals.filter(
-      (proposal) =>
-        selectedStatus.includes(proposal.status) &&
-        proposal.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return formattedProposals
+      .filter(
+        (proposal) =>
+          selectedStatus.includes(proposal.status) &&
+          proposal.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => {
+        return Date.parse(b.date) - Date.parse(a.date);
+      });
   }, [searchQuery, selectedStatus, formattedProposals, isLoading]);
+
+  const processTelegramUsername = (content: string) => {
+    if (!content || !content.startsWith("0x")) {
+      console.error(
+        "Invalid content format. Expected a hex string starting with '0x'."
+      );
+      return "";
+    }
+
+    try {
+      const decodedUsername = Buffer.from(content.slice(2), "hex")
+        .toString("utf-8")
+        .replace(/\u0000/g, "");
+
+      // Remove '@' and any non-alphanumeric characters
+      return decodedUsername.replace(/^@|[^a-zA-Z0-9]/g, "");
+    } catch (error) {
+      console.error("Error processing Telegram username:", error);
+      return "";
+    }
+  };
+
+  const processByteToString = (content: string) => {
+    if (!content || !content.startsWith("0x")) {
+      console.error(
+        "Invalid content format. Expected a hex string starting with '0x'."
+      );
+      return "";
+    }
+
+    try {
+      return Buffer.from(content.slice(2), "hex")
+        .toString("utf-8")
+        .replace(/\u0000/g, "");
+    } catch (error) {
+      console.error("Error processing comment content:", error);
+      return "";
+    }
+  };
 
   const handleSubmitProposal = (proposalData: any) => {
     console.log("New Proposal:", proposalData);
@@ -106,10 +149,15 @@ export default function Proposals() {
         <header className="sticky top-0 z-50 bg-gray-900/80 backdrop-blur-md border-b border-gray-700">
           <div className="container mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
             <Link href="/" className="flex items-center space-x-3 group">
-              <Terminal className="text-emerald-400 w-5 h-5 sm:w-8 sm:h-8 transition-transform group-hover:scale-110 duration-300" />
-              <span className="text-base sm:text-2xl font-bold bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
-                Base Nigeria
-              </span>
+              <div className="flex items-center space-x-3">
+                <Image
+                  src={Logo}
+                  alt="Base Nigeria Logo"
+                  width={40}
+                  height={40}
+                  className="w-9 h-9 sm:w-14 sm:h-14"
+                />
+              </div>
             </Link>
             <Wallet>
               <ConnectWallet className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400">
@@ -232,7 +280,7 @@ export default function Proposals() {
                           {proposal.status}
                         </span>
                         <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-gray-700/50 text-gray-300 border border-gray-600/50">
-                          {proposal.category}
+                          {processByteToString(proposal.category)}
                         </span>
                       </div>
                       <h2 className="text-xl font-semibold text-emerald-300 group-hover:text-emerald-200 transition-colors duration-300">
@@ -265,13 +313,19 @@ export default function Proposals() {
                       </button>
                       <span className="text-xs sm:text-sm text-gray-400">
                         by{" "}
-                        <span className="text-emerald-400">
-                          {proposal.author}
-                        </span>
+                        <Link
+                          href={`https://t.me/${processTelegramUsername(
+                            proposal.telegramUsername
+                          )}`}
+                          target="_blank"
+                          className="text-emerald-400"
+                        >
+                          {processTelegramUsername(proposal.telegramUsername)}
+                        </Link>
                       </span>
                     </div>
                     <Link
-                      href={`/proposals/${proposal.id}`}
+                      href={`/ideas/${proposal.id}`}
                       className="self-end sm:self-auto flex items-center text-xs sm:text-base text-emerald-400 hover:text-emerald-300 transition-colors duration-300 group/link"
                     >
                       View Details

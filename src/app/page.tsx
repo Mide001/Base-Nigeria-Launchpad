@@ -1,15 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Users,
-  Terminal,
-  FileText,
-  GitPullRequest,
-  Github,
-  Menu,
-  X,
-} from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { Users, FileText, GitPullRequest, Github, Menu, X } from "lucide-react";
+import Logo from "@/assets/BASE-NIGERIA-LOGO.png";
 import Features from "@/components/Features";
 import Footer from "@/components/Footer";
 
@@ -26,10 +20,13 @@ export default function Home() {
       <div className="sticky top-0 z-50 bg-gray-800/90 backdrop-blur-md border-b border-gray-700">
         <div className="container mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <Terminal className="text-emerald-400 w-6 h-6 sm:w-8 sm:h-8" />
-            <span className="text-xl sm:text-2xl font-bold text-emerald-300">
-              Base Nigeria
-            </span>
+            <Image
+              src={Logo}
+              alt="Base Nigeria Logo"
+              width={40}
+              height={40}
+              className="w-10 h-10 sm:w-14 sm:h-14"
+            />
           </div>
 
           {/* Desktop Navigation */}
@@ -76,10 +73,13 @@ export default function Home() {
           <div className="fixed right-0 top-0 h-auto w-full bg-gray-800 p-6 shadow-xl transform transition-transform rounded-b-2xl">
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center space-x-3">
-                <Terminal className="text-emerald-400 w-4 h-4 sm:w-8 sm:h-8" />
-                <span className="text-base sm:text-2xl font-bold text-emerald-300">
-                  Base Nigeria
-                </span>
+                <Image
+                  src={Logo}
+                  alt="Base Nigeria Logo"
+                  width={40}
+                  height={40}
+                  className="w-9 h-9 sm:w-14 sm:h-14"
+                />
               </div>
               <button
                 onClick={toggleSidebar}
@@ -137,11 +137,11 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                 <Link
-                  href="/proposals"
+                  href="/ideas"
                   className="bg-emerald-600/90 backdrop-blur-sm text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg flex items-center justify-center space-x-2 hover:bg-emerald-600 transition text-sm sm:text-base"
                 >
                   <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span>View Proposals</span>
+                  <span>See Ideas</span>
                 </Link>
                 <Link
                   href="#how-it-works"
@@ -167,7 +167,7 @@ export default function Home() {
                 icon: (
                   <GitPullRequest className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto text-blue-400 mb-3 sm:mb-4" />
                 ),
-                title: "Submit Proposals",
+                title: "Submit Ideas",
                 description:
                   "Identify and articulate technical challenges in the African tech ecosystem",
               },
