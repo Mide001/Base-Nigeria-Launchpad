@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import Logo from "@/assets/BASE-NIGERIA.png"; 
+import Logo from "@/assets/BASE-NIGERIA.png";
 
 const Footer = () => {
   return (
@@ -10,11 +10,10 @@ const Footer = () => {
           <Image
             src={Logo}
             alt="Base Nigeria Logo"
-            width={40}
-            height={40}
-            className="w-36 h-8 sm:w-48 sm:h-12"
+            className="w-12 h-12"
           />
         </div>
+
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
           <a href="#" className="text-gray-400 hover:text-emerald-300">
             Code of Conduct

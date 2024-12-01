@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   X,
   PlusCircle,
@@ -8,8 +8,11 @@ import {
   ChevronDown,
   Info,
   MessageSquareMore,
+  CheckCircle,
 } from "lucide-react";
-import { useWriteContract } from "wagmi";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { useAccount } from "wagmi";
+import { useCapabilities, useWriteContracts } from "wagmi/experimental";
 import { BaseAfricaDaoAddress, BaseAfricaDaoABI } from "@/constants/constants";
 import { Toast, useToast } from "./Toast";
 
@@ -63,13 +66,14 @@ const NewProposalModal = ({
   const [titleError, setTitleError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [categoryError, setCategoryError] = useState("");
-
-  const { data: hash, writeContractAsync } = useWriteContract();
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showToast, hideToast, toast } = useToast();
 
-  // Handle viewport locking/unlocking when modal opens/closes
+  const account = useAccount();
+  const [success, setSuccess] = useState(false);
+
   if (isOpen) {
     ViewportManager.lockViewport();
   }
@@ -78,6 +82,40 @@ const NewProposalModal = ({
     ViewportManager.unlockViewport();
     onClose();
   };
+
+  const { writeContracts } = useWriteContracts({
+    mutation: {
+      onSuccess: () => {
+        setShowSuccessAlert(true);
+
+        setTimeout(() => {
+          setShowSuccessAlert(false);
+        }, 5000);
+      },
+    },
+  });
+
+  const { data: availableCapabilities } = useCapabilities({
+    account: account.address,
+  });
+
+  const capabilities = useMemo(() => {
+    if (!availableCapabilities || !account.chainId) return {};
+    const capabilitiesForChain = availableCapabilities[account.chainId];
+
+    if (
+      capabilitiesForChain["paymasterService"] &&
+      capabilitiesForChain["paymasterService"].supported
+    ) {
+      return {
+        paymasterService: {
+          url: process.env.NEXT_PUBLIC_PAYMASTER_URL,
+        },
+      };
+    }
+
+    return {};
+  }, [availableCapabilities, account.chainId]);
 
   const validateForm = () => {
     let isValid = true;
@@ -109,7 +147,7 @@ const NewProposalModal = ({
     return isValid;
   };
 
-  const handleSubmit = async () => {
+/*   const handleSubmit = async () => {
     const isValid = validateForm();
 
     if (!isValid) {
@@ -118,35 +156,23 @@ const NewProposalModal = ({
 
     setIsSubmitting(true);
 
-    try {
-      const transactionHash = await writeContractAsync({
-        address: BaseAfricaDaoAddress,
-        abi: BaseAfricaDaoABI,
-        functionName: "createProposal",
-        args: [title, description, category, telegramUsername],
-      });
+    writeContracts({
+      contracts: [
+        {
+          address: BaseAfricaDaoAddress,
+          abi: BaseAfricaDaoABI,
+          functionName: "createProposal",
+          args: [title, description, category, telegramUsername],
+        },
+      ],
+      capabilities,
+    });
 
-      if (transactionHash) {
-        showToast(
-          `Proposal created successfully! TX: ${transactionHash.slice(
-            0,
-            10
-          )}...`,
-          "success"
-        );
-
-        setTitle("");
-        setDescription("");
-        setCategory("");
-        onClose();
-      }
-    } catch (error) {
-      showToast("Error creating proposal", "error");
-      console.log("Error creating proposal", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    setTitle("");
+    setDescription("");
+    setCategory("");
+    onClose();
+  }; */
 
   if (!isOpen) return null;
 
@@ -168,6 +194,18 @@ const NewProposalModal = ({
             <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
+
+        {showSuccessAlert && (
+          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm">
+            <Alert variant="default" className="bg-green-950 border-green-900">
+              <CheckCircle className="h-4 w-4 text-green-400" />
+              <AlertTitle className="text-green-400">Success</AlertTitle>
+              <AlertDescription className="text-green-200">
+                Your transaction was completed successfully!
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
 
         <div className="p-4 sm:p-8 space-y-4 sm:space-y-6">
           <div>
@@ -264,22 +302,29 @@ const NewProposalModal = ({
             )}
           </div>
           <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className={`w-full flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r 
-          ${
-            isSubmitting
-              ? "from-gray-600 to-gray-500 cursor-not-allowed"
-              : "from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 hover:scale-[1.02]"
-          } 
-          text-white py-3 sm:py-4 rounded-xl transition-all text-sm sm:text-lg font-semibold active:scale-100`}
+            className={`w-full flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 hover:scale-[1.02]  text-white py-3 sm:py-4 rounded-xl transition-all text-sm sm:text-lg font-semibold active:scale-100`}
+            disabled={success}
+            onClick={() => {
+              writeContracts({
+                contracts: [
+                  {
+                    address: BaseAfricaDaoAddress,
+                    abi: BaseAfricaDaoABI,
+                    functionName: "createProposal",
+                    args: [title, description, category, telegramUsername],
+                  },
+                ],
+                capabilities,
+              });
+
+              setTitle("");
+              setDescription("");
+              setCategory("");
+              onClose();
+            }}
           >
-            {isSubmitting ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-            ) : (
-              <PlusCircle className="w-5 h-5 sm:w-6 sm:h-6" />
-            )}
-            {isSubmitting ? "Creating Proposal..." : "Submit Proposal"}
+            <PlusCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+            Submit Proposal
           </button>
         </div>
         {toast && (

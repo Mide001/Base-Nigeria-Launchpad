@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -9,12 +9,16 @@ import {
   MessageSquare,
   ThumbsUpIcon,
   PlusCircle,
+  CheckCircle,
 } from "lucide-react";
-import { useReadContract, useWriteContract, useAccount } from "wagmi";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import UpdateStatusModal from "@/components/UpdateStatusModal";
 import Footer from "@/components/Footer";
+import { useCapabilities, useWriteContracts } from "wagmi/experimental";
+import { useReadContract, useAccount } from "wagmi";
 import { BaseAfricaDaoABI, BaseAfricaDaoAddress } from "@/constants/constants";
+
+
 
 enum ProposalStatus {
   Active,
@@ -53,9 +57,10 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
   >("details");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
-  const [showLoginAlert, setShowLoginAlert] = useState(false);
+  const [isWalletRequired, setIsWalletRequired] = useState(false);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
   const { data: proposalArray, isLoading } = useReadContract({
     abi: BaseAfricaDaoABI,
@@ -71,7 +76,38 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
     args: [params.id],
   });
 
-  const { data: hash, writeContractAsync } = useWriteContract();
+  const { writeContracts } = useWriteContracts({
+    mutation: {
+      onSuccess: () => {
+        setShowSuccessAlert(true);
+
+        setTimeout(() => {
+          setShowSuccessAlert(false);
+        }, 5000);
+      },
+    },
+  });
+
+  const { data: availableCapabilities } = useCapabilities({
+    account: address,
+  });
+
+  const capabilities = useMemo(() => {
+    if (!availableCapabilities || !chainId) return {};
+    const capabilitiesForChain = availableCapabilities[chainId];
+
+    if (
+      capabilitiesForChain["paymasterService"] &&
+      capabilitiesForChain["paymasterService"].supported
+    ) {
+      return {
+        paymasterService: {
+          url: process.env.NEXT_PUBLIC_PAYMASTER_URL,
+        },
+      };
+    }
+    return {};
+  }, [availableCapabilities, chainId]);
 
   if (isLoading) {
     return (
@@ -158,31 +194,31 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
     }
   };
 
-  const onSupport = async () => {
+  const onSupport = () => {
     if (!address) {
-      setShowLoginAlert(true);
-      setTimeout(() => setShowLoginAlert(false), 3000);
+      setIsWalletRequired(true);
+      setTimeout(() => setIsWalletRequired(false), 3000);
       return;
     }
 
-    try {
-      const transactionHash = await writeContractAsync({
-        address: BaseAfricaDaoAddress,
-        abi: BaseAfricaDaoABI,
-        functionName: "upvoteProposal",
-        args: [params.id],
-      });
+    writeContracts({
+      contracts: [
+        {
+          address: BaseAfricaDaoAddress,
+          abi: BaseAfricaDaoABI,
+          functionName: "upvoteProposal",
+          args: [params.id],
+        },
+      ],
+      capabilities,
+    });
 
-      console.log("Supporting proposal:", transactionHash);
-    } catch (error) {
-      console.error("Error supporting proposal:", error);
-    }
   };
 
   const handleAddComment = async () => {
     if (!address) {
-      setShowLoginAlert(true);
-      setTimeout(() => setShowLoginAlert(false), 3000);
+      setIsWalletRequired(true);
+      setTimeout(() => setIsWalletRequired(false), 3000);
       return;
     }
 
@@ -191,25 +227,24 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
       return;
     }
 
-    try {
-      const transactionHash = await writeContractAsync({
-        address: BaseAfricaDaoAddress,
-        abi: BaseAfricaDaoABI,
-        functionName: "addComment",
-        args: [params.id, newComment],
-      });
+    writeContracts({
+      contracts: [
+        {
+          address: BaseAfricaDaoAddress,
+          abi: BaseAfricaDaoABI,
+          functionName: "addComment",
+          args: [params.id, newComment],
+        },
+      ],
 
-      console.log(transactionHash);
-      setNewComment("");
-    } catch (err) {
-      console.error(err);
-    }
+      capabilities,
+    });
   };
 
   return (
     <>
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 text-white">
-        {showLoginAlert && (
+        {isWalletRequired && (
           <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm">
             <Alert variant="destructive" className="bg-red-950 border-red-900">
               <AlertTitle className="text-red-400">
@@ -217,6 +252,18 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
               </AlertTitle>
               <AlertDescription className="text-red-200">
                 Please connect your wallet to support this proposal.
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
+
+        {showSuccessAlert && (
+          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm">
+            <Alert variant="default" className="bg-green-950 border-green-900">
+              <CheckCircle className="h-4 w-4 text-green-400" />
+              <AlertTitle className="text-green-400">Success</AlertTitle>
+              <AlertDescription className="text-green-200">
+                Your transaction was completed successfully!
               </AlertDescription>
             </Alert>
           </div>
