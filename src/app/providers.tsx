@@ -10,7 +10,6 @@ export function Providers(props: {
   children: ReactNode;
   initialState?: State;
 }) {
-  
   const [queryClient] = useState(() => new QueryClient());
   return (
     <WagmiProvider config={config} initialState={props.initialState}>

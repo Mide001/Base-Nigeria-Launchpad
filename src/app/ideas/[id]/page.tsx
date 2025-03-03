@@ -100,9 +100,10 @@ const ProposalDetails: React.FC<{ params: { id: string } }> = ({ params }) => {
       capabilitiesForChain["paymasterService"] &&
       capabilitiesForChain["paymasterService"].supported
     ) {
+      
       return {
         paymasterService: {
-          url: process.env.NEXT_PUBLIC_PAYMASTER_URL,
+          url: 'https://api.developer.coinbase.com/rpc/v1/base/llDkcoS7LklDy7AvimqixtANQjvXXLDx'
         },
       };
     }

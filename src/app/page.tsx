@@ -6,6 +6,8 @@ import { Users, FileText, GitPullRequest, Github, Menu, X } from "lucide-react";
 import Logo from "@/assets/BASE-NIGERIA-LOGO.png";
 import Features from "@/components/Features";
 import Footer from "@/components/Footer";
+import WestAfricanProducts from "@/components/WestAfricanProducts";
+import PointSystemAndLeaderboard from "@/components/PointSystemAndLeaderboard";
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -156,64 +158,8 @@ export default function Home() {
           </div>
         </main>
       </div>
-      <section id="contribute" className="bg-gray-800 py-8 sm:py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-300 mb-6 sm:mb-8">
-            How You Can Contribute
-          </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            {[
-              {
-                icon: (
-                  <GitPullRequest className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto text-blue-400 mb-3 sm:mb-4" />
-                ),
-                title: "Submit Ideas",
-                description:
-                  "Identify and articulate technical challenges in the African tech ecosystem",
-              },
-              {
-                icon: (
-                  <Users className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto text-green-400 mb-3 sm:mb-4" />
-                ),
-                title: "Community Discussion",
-                description:
-                  "Participate in validating problems and shaping potential solutions through community feedback",
-              },
-              {
-                icon: (
-                  <Github className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto text-purple-400 mb-3 sm:mb-4" />
-                ),
-                title: "Open Source Development",
-                description:
-                  "Contribute code, review PRs, and help build solutions",
-              },
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="bg-gray-900 p-4 sm:p-6 rounded-xl border border-gray-700 hover:border-emerald-600 transition"
-              >
-                {feature.icon}
-                <h3 className="text-lg sm:text-xl font-bold text-emerald-300 mb-2 sm:mb-3">
-                  {feature.title}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-400">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-8 sm:mt-12">
-            <a
-              href="https://github.com/Mide001/Base-Africa-Dao/"
-              target="_blank"
-              className="bg-emerald-600 text-white px-6 py-2 sm:px-8 sm:py-3 rounded-lg flex items-center justify-center space-x-2 sm:space-x-3 mx-auto w-fit hover:bg-emerald-700 transition text-sm sm:text-base"
-            >
-              <Github className="w-5 h-5 sm:w-6 sm:h-6" />
-              <span>View GitHub Repository</span>
-            </a>
-          </div>
-        </div>
-      </section>
+      <WestAfricanProducts />
+      <PointSystemAndLeaderboard />
       <Footer />
     </div>
   );
