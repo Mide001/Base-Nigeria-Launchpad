@@ -152,7 +152,7 @@ export default function Proposals() {
               <div className="flex items-center space-x-3">
                 <Image
                   src={Logo}
-                  alt="Base Nigeria Logo"
+                  alt="Base West Africa Logo"
                   width={40}
                   height={40}
                   className="w-9 h-9 sm:w-14 sm:h-14"

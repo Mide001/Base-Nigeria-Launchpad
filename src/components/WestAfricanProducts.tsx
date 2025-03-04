@@ -1,37 +1,88 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, useCallback } from "react";
 import ProductCard from "./ProductCard";
-import { westAfricanProducts } from "@/constants/west-african-products.ts";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Product } from "@/constants/west-african-products";
+import { useRouter } from 'next/navigation';
+
+const ProductCardSkeleton = () => (
+  <div className="flex-1 p-6 bg-gray-800/50 rounded-lg border border-gray-700/50 animate-pulse">
+    <div className="w-16 h-16 bg-gray-700/50 rounded-lg mb-4" /> {/* Logo */}
+    <div className="h-6 bg-gray-700/50 rounded w-3/4 mb-3" /> {/* Title */}
+    <div className="space-y-2 mb-4"> {/* Description */}
+      <div className="h-4 bg-gray-700/50 rounded w-full" />
+      <div className="h-4 bg-gray-700/50 rounded w-5/6" />
+      <div className="h-4 bg-gray-700/50 rounded w-4/6" />
+    </div>
+    <div className="space-y-2"> {/* Links */}
+      <div className="h-4 bg-gray-700/50 rounded w-1/2" />
+      <div className="h-4 bg-gray-700/50 rounded w-1/3" />
+    </div>
+  </div>
+);
 
 const WestAfricanProducts: React.FC = () => {
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch products on mount and after approval
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('/api/products/approved', {
+          cache: 'no-store' // For real-time updates
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // Number of products per slide based on screen size
   const productsPerSlide = 3;
-  const totalSlides = Math.ceil(westAfricanProducts.length / productsPerSlide);
+  const totalSlides = Math.ceil((loading ? 3 : products.length) / productsPerSlide);
 
   // Auto-scroll functionality
+  const goToNext = useCallback(() => {
+    setIsAnimating(true);
+    setActiveIndex((prev) => (prev + 1) % totalSlides);
+    setTimeout(() => setIsAnimating(false), 700);
+  }, [totalSlides]);
+
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!isAnimating) {
+      if (!isAnimating && !loading) {
         goToNext();
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [activeIndex, isAnimating]);
-
-  const goToNext = () => {
-    setIsAnimating(true);
-    setActiveIndex((prev) => (prev + 1) % totalSlides);
-    setTimeout(() => setIsAnimating(false), 700);
-  };
+  }, [isAnimating, loading, goToNext]);
 
   const goToPrev = () => {
     setIsAnimating(true);
     setActiveIndex((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
     setTimeout(() => setIsAnimating(false), 700);
   };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[1, 2, 3].map((i) => (
+          <ProductCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full overflow-hidden">
@@ -82,28 +133,28 @@ const WestAfricanProducts: React.FC = () => {
                 opacity: isAnimating ? 0.7 : 1,
               }}
             >
-              {/* Create a slide for each group of products */}
-              {Array.from({ length: totalSlides }).map((_, slideIndex) => {
-                const slideProducts = westAfricanProducts.slice(
-                  slideIndex * productsPerSlide,
-                  (slideIndex + 1) * productsPerSlide
-                );
-
-                return (
-                  <div key={slideIndex} className="w-full flex-shrink-0">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      {slideProducts.map((product, index) => (
-                        <div
-                          key={slideIndex * productsPerSlide + index}
-                          className="transform transition-all duration-500 hover:scale-105 hover:-translate-y-2"
-                        >
-                          <ProductCard product={product} />
-                        </div>
-                      ))}
-                    </div>
+              {Array.from({ length: totalSlides }).map((_, slideIndex) => (
+                <div key={slideIndex} className="w-full flex-shrink-0">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {loading ? (
+                      // Show skeletons while loading
+                      [1, 2, 3].map((i) => (
+                        <ProductCardSkeleton key={i} />
+                      ))
+                    ) : (
+                      // Show actual products when loaded
+                      products
+                        .slice(
+                          slideIndex * productsPerSlide,
+                          (slideIndex + 1) * productsPerSlide
+                        )
+                        .map((product) => (
+                          <ProductCard key={product.name} product={product} />
+                        ))
+                    )}
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
 
@@ -145,7 +196,10 @@ const WestAfricanProducts: React.FC = () => {
 
         {/* Call to action */}
         <div className="mt-16 text-center">
-          <button className="px-6 py-3 bg-emerald-600/90 backdrop-blur-sm text-white font-medium rounded-lg shadow-lg hover:shadow-xl transform transition duration-300 hover:-translate-y-1 animate-pulse-subtle">
+          <button 
+            onClick={() => router.push('/submit')}
+            className="px-6 py-3 bg-emerald-600/90 backdrop-blur-sm text-white font-medium rounded-lg shadow-lg hover:shadow-xl transform transition duration-300 hover:-translate-y-1 animate-pulse-subtle"
+          >
             Submit Your Product
           </button>
         </div>

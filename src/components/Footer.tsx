@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="flex items-center space-x-3">
           <Image
             src={Logo}
-            alt="Base Nigeria Logo"
+            alt="Base West Africa Logo"
             className="w-12 h-12"
           />
         </div>

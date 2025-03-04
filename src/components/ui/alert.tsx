@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
+import { XCircle, CheckCircle, AlertCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -55,5 +56,43 @@ const AlertDescription = React.forwardRef<
   />
 ))
 AlertDescription.displayName = "AlertDescription"
+
+type AlertType = "success" | "error" | "info"
+
+interface AlertProps {
+  type: AlertType
+  message: string
+  onClose?: () => void
+}
+
+const AlertComponent = ({ type, message, onClose }: AlertProps) => {
+  const styles = {
+    success: "bg-emerald-500/20 border-emerald-500/50 text-emerald-300",
+    error: "bg-red-500/20 border-red-500/50 text-red-300",
+    info: "bg-blue-500/20 border-blue-500/50 text-blue-300"
+  }
+
+  const icons = {
+    success: <CheckCircle className="w-5 h-5" />,
+    error: <XCircle className="w-5 h-5" />,
+    info: <AlertCircle className="w-5 h-5" />
+  }
+
+  return (
+    <div className={`${styles[type]} px-4 py-3 rounded-lg border flex items-center justify-between`}>
+      <div className="flex items-center space-x-3">
+        {icons[type]}
+        <span>{message}</span>
+      </div>
+      {onClose && (
+        <button onClick={onClose} className="hover:opacity-80">
+          <XCircle className="w-5 h-5" />
+        </button>
+      )}
+    </div>
+  )
+}
+
+export default AlertComponent
 
 export { Alert, AlertTitle, AlertDescription }
