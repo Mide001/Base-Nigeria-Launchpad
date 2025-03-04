@@ -217,7 +217,7 @@ const PointSystemAndLeaderboard = () => {
             className="inline-block"
           >
             <h1 className="text-5xl sm:text-6xl font-bold mb-4 bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent">
-              Base Nigeria Point System
+              Base West Africa Point System
             </h1>
             <motion.div 
               animate={{ width: ["0%", "100%"] }}
@@ -232,7 +232,7 @@ const PointSystemAndLeaderboard = () => {
             className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto mt-8 leading-relaxed"
           >
             Recognizing and rewarding contributions to the Base ecosystem in
-            Nigeria. Points are awarded based on the effort and impact of your
+            West Africa. Points are awarded based on the effort and impact of your
             contributions.
           </motion.p>
         </motion.div>
@@ -439,7 +439,7 @@ const PointSystemAndLeaderboard = () => {
               color: "from-yellow-400 to-amber-500",
               bgColor: "from-yellow-500/10 to-amber-500/10"
             },
-            { 
+            {    
               label: "Events Organized", 
               value: "23",
               icon: <Users className="w-6 h-6" />,
@@ -448,7 +448,7 @@ const PointSystemAndLeaderboard = () => {
             },
             { 
               label: "Total Points Awarded", 
-              value: "4,879",
+              value: "4879",
               icon: <Award className="w-6 h-6" />,
               color: "from-emerald-400 to-teal-500",
               bgColor: "from-emerald-500/10 to-teal-500/10"

@@ -85,7 +85,7 @@ export const westAfricanProducts: Product[] = [
     description:
       "We simplify income, credit, and employment verification—making it fast, secure, and hassle-free. Say goodbye to bank statements, pay stubs, hard credit checks, and endless employer calls. With Cr3dentials, get instant, fraud-proof verifications without compromising sensitive financial details.",
     category: "Onchain Reputation",
-    country: "Nigeria",
+    country: "Ghana",
     logo: "cr3dentials.JPG",
     website: "https://cr3dentials.xyz",
     twitter: "https://x.com/cr3dentials",

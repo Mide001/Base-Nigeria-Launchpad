@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ExternalLink, Twitter, Globe, Github } from "lucide-react";
-import { Product } from "@/constants/west-african-products.ts";
+import { Product } from "@/constants/west-african-products";
+import Image from 'next/image';
 
 interface ProductCardProps {
   product: Product;
@@ -8,6 +9,11 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  // Function to determine if the logo is a base64 string
+  const isBase64Image = (str: string) => {
+    return str?.startsWith('data:image');
+  };
 
   return (
     <div
@@ -19,17 +25,29 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       <div className="p-5 relative z-10">
         <div className="flex items-start justify-between mb-3">
-          <div className="w-10 h-10 rounded-lg bg-gray-700 flex items-center justify-center overflow-hidden">
-            {product.logo ? (
-              <img
-                src={`/logos/${product.logo}`}
-                alt={`${product.name} logo`}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white font-bold text-lg">
-                {product.name.charAt(0)}
-              </div>
+          <div className="relative w-16 h-16 flex-shrink-0">
+            {product.logo && (
+              isBase64Image(product.logo) ? (
+                // For base64 images from DB
+                <div className="relative w-16 h-16">
+                  <Image
+                    src={product.logo}
+                    alt={product.name}
+                    fill
+                    className="object-cover rounded-lg"
+                    sizes="64px"
+                  />
+                </div>
+              ) : (
+                // For static images
+                <Image
+                  src={`/images/${product.logo}`}
+                  alt={product.name}
+                  width={64}
+                  height={64}
+                  className="rounded-lg object-cover"
+                />
+              )
             )}
           </div>
 
@@ -48,7 +66,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <h3 className="text-lg font-bold text-emerald-300 mb-2">
           {product.name}
         </h3>
-        <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+        <p className="text-gray-400 text-sm mb-4 line-clamp-3">
           {product.description}
         </p>
 
