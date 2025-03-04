@@ -107,56 +107,52 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold text-emerald-300 mb-8">
-            Product Management
-          </h1>
-          
-          {alert && (
-            <div className="mb-6">
-              <Alert
-                type={alert.type}
-                message={alert.message}
-                onClose={() => setAlert(null)}
-              />
-            </div>
-          )}
-
-          <div className="mb-8 border-b border-gray-700 overflow-x-auto">
-            <nav className="flex gap-2 sm:gap-4 min-w-full sm:min-w-0">
-              {['pending', 'approved', 'rejected'].map((tab) => (
-                <button
-                  key={tab}
-                  className={`px-4 sm:px-6 py-3 -mb-px text-sm sm:text-base whitespace-nowrap transition-colors duration-200 ${
-                    activeTab === tab
-                      ? 'border-b-2 border-emerald-500 text-emerald-300 font-medium'
-                      : 'text-gray-400 hover:text-gray-300 hover:border-gray-700'
-                  }`}
-                  onClick={() => setActiveTab(tab as TabType)}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </nav>
+      <main className="flex-grow container mx-auto px-4 py-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-emerald-300 mb-6">
+          Product Management
+        </h1>
+        
+        {alert && (
+          <div className="mb-4">
+            <Alert
+              type={alert.type}
+              message={alert.message}
+              onClose={() => setAlert(null)}
+            />
           </div>
+        )}
 
+        <div className="mb-6 border-b border-gray-700">
+          <nav className="flex gap-4">
+            {['pending', 'approved', 'rejected'].map((tab) => (
+              <button
+                key={tab}
+                className={`px-4 py-2 -mb-px ${
+                  activeTab === tab
+                    ? 'border-b-2 border-emerald-500 text-emerald-300'
+                    : 'text-gray-400 hover:text-gray-300'
+                }`}
+                onClick={() => setActiveTab(tab as TabType)}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className={`${activeTab !== 'approved' && products.length > 4 ? 'h-[calc(100vh-13rem)] overflow-y-auto' : ''}`}>
           {loading ? (
-            <div className="flex items-center justify-center py-12">
+            <div className="flex items-center justify-center py-8">
               <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
             </div>
           ) : error ? (
             <Alert type="error" message={error} />
           ) : products.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="bg-gray-800/50 rounded-lg p-8">
-                <p className="text-gray-400 text-lg">
-                  No {activeTab} products found
-                </p>
-              </div>
+            <div className="text-center py-8">
+              <p className="text-gray-400">No {activeTab} products found</p>
             </div>
           ) : (
-            <div className="grid gap-6">
+            <div className="grid gap-4">
               {products.map((product) => (
                 <div
                   key={product.id}
