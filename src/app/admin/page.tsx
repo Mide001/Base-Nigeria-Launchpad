@@ -105,151 +105,161 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
       <Navbar />
-      <div className="container mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold text-emerald-300 mb-8">Product Management</h1>
-        
-        {alert && (
-          <div className="mb-6">
-            <Alert
-              type={alert.type}
-              message={alert.message}
-              onClose={() => setAlert(null)}
-            />
+      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl font-bold text-emerald-300 mb-8">
+            Product Management
+          </h1>
+          
+          {alert && (
+            <div className="mb-6">
+              <Alert
+                type={alert.type}
+                message={alert.message}
+                onClose={() => setAlert(null)}
+              />
+            </div>
+          )}
+
+          <div className="mb-8 border-b border-gray-700 overflow-x-auto">
+            <nav className="flex gap-2 sm:gap-4 min-w-full sm:min-w-0">
+              {['pending', 'approved', 'rejected'].map((tab) => (
+                <button
+                  key={tab}
+                  className={`px-4 sm:px-6 py-3 -mb-px text-sm sm:text-base whitespace-nowrap transition-colors duration-200 ${
+                    activeTab === tab
+                      ? 'border-b-2 border-emerald-500 text-emerald-300 font-medium'
+                      : 'text-gray-400 hover:text-gray-300 hover:border-gray-700'
+                  }`}
+                  onClick={() => setActiveTab(tab as TabType)}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
+            </nav>
           </div>
-        )}
 
-        <div className="mb-8 border-b border-gray-700">
-          <nav className="flex gap-4">
-            {['pending', 'approved', 'rejected'].map((tab) => (
-              <button
-                key={tab}
-                className={`px-6 py-3 -mb-px ${
-                  activeTab === tab
-                    ? 'border-b-2 border-emerald-500 text-emerald-300'
-                    : 'text-gray-400 hover:text-gray-300'
-                }`}
-                onClick={() => setActiveTab(tab as TabType)}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
-          </div>
-        ) : error ? (
-          <Alert type="error" message={error} />
-        ) : products.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            No {activeTab} products found
-          </div>
-        ) : (
-          <div className="grid gap-6">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700"
-              >
-                <div className="flex items-start gap-6">
-                  <div className="relative w-16 h-16">
-                    {product.logo && (
-                      <Image
-                        src={product.logo}
-                        alt={product.name}
-                        fill
-                        className="rounded-lg object-cover"
-                        sizes="64px"
-                      />
-                    )}
-                  </div>
-
-                  <div className="flex-grow">
-                    <div className="flex items-center gap-3">
-                      <h2 className="text-xl font-semibold text-emerald-300">
-                        {product.name}
-                      </h2>
-                      {activeTab === 'approved' && (
-                        <CheckCircle className="w-5 h-5 text-emerald-500" />
-                      )}
-                      {activeTab === 'rejected' && (
-                        <XCircle className="w-5 h-5 text-red-500" />
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+            </div>
+          ) : error ? (
+            <Alert type="error" message={error} />
+          ) : products.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="bg-gray-800/50 rounded-lg p-8">
+                <p className="text-gray-400 text-lg">
+                  No {activeTab} products found
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-6">
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-gray-700 hover:border-emerald-500/30 transition-colors duration-300"
+                >
+                  <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 mx-auto sm:mx-0">
+                      {product.logo && (
+                        <Image
+                          src={product.logo}
+                          alt={product.name}
+                          fill
+                          className="rounded-lg object-cover"
+                          sizes="(max-width: 640px) 64px, 80px"
+                        />
                       )}
                     </div>
-                    <p className="text-gray-400 mt-1 line-clamp-2">{product.description}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <span className="px-2 py-1 bg-gray-700/50 rounded text-sm">
-                        {product.category}
-                      </span>
-                      <span className="px-2 py-1 bg-gray-700/50 rounded text-sm">
-                        {product.country}
-                      </span>
-                    </div>
-                    <div className="mt-3 flex gap-4">
-                      {product.website && (
-                        <a
-                          href={product.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-emerald-400 hover:underline"
-                        >
-                          Website
-                        </a>
-                      )}
-                      {product.twitter && (
-                        <a
-                          href={product.twitter}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-emerald-400 hover:underline"
-                        >
-                          Twitter
-                        </a>
-                      )}
-                      {product.github && (
-                        <a
-                          href={product.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-emerald-400 hover:underline"
-                        >
-                          GitHub
-                        </a>
-                      )}
-                    </div>
-                  </div>
 
-                  <div className="flex flex-col gap-2">
-                    <div className="text-sm text-gray-500">
-                      {new Date(product.submittedAt).toLocaleDateString()}
+                    <div className="flex-grow space-y-3 text-center sm:text-left">
+                      <div className="flex items-center gap-3 justify-center sm:justify-start">
+                        <h2 className="text-xl font-semibold text-emerald-300">
+                          {product.name}
+                        </h2>
+                        {activeTab === 'approved' && (
+                          <CheckCircle className="w-5 h-5 text-emerald-500" />
+                        )}
+                        {activeTab === 'rejected' && (
+                          <XCircle className="w-5 h-5 text-red-500" />
+                        )}
+                      </div>
+                      <p className="text-gray-400 text-sm sm:text-base line-clamp-2">
+                        {product.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                        <span className="px-2 py-1 bg-gray-700/50 rounded text-xs sm:text-sm text-emerald-200">
+                          {product.category}
+                        </span>
+                        <span className="px-2 py-1 bg-gray-700/50 rounded text-xs sm:text-sm text-emerald-200">
+                          {product.country}
+                        </span>
+                      </div>
+                      <div className="flex gap-4 justify-center sm:justify-start">
+                        {product.website && (
+                          <a
+                            href={product.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors duration-200"
+                          >
+                            Website
+                          </a>
+                        )}
+                        {product.twitter && (
+                          <a
+                            href={product.twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors duration-200"
+                          >
+                            Twitter
+                          </a>
+                        )}
+                        {product.github && (
+                          <a
+                            href={product.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors duration-200"
+                          >
+                            GitHub
+                          </a>
+                        )}
+                      </div>
                     </div>
-                    {activeTab === 'pending' && (
-                      <>
-                        <button
-                          onClick={() => handleApprove(product.id)}
-                          className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleReject(product.id)}
-                          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
+
+                    <div className="flex flex-col gap-3 w-full sm:w-auto items-center sm:items-end">
+                      <div className="text-sm text-gray-500">
+                        {new Date(product.submittedAt).toLocaleDateString()}
+                      </div>
+                      {activeTab === 'pending' && (
+                        <div className="flex gap-2 sm:flex-col w-full sm:w-auto">
+                          <button
+                            onClick={() => handleApprove(product.id)}
+                            className="flex-1 sm:flex-none px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors duration-200 text-sm"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleReject(product.id)}
+                            className="flex-1 sm:flex-none px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-200 text-sm"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
       <Footer />
     </div>
   );

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Trophy, Award, Star, Users, Zap, PlusCircle, ArrowRight, Gift, Flame } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 // Sample data for the leaderboard with .base.eth domains
 const topContributors = [
@@ -186,15 +187,15 @@ const PointSystemAndLeaderboard = () => {
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white py-16 relative overflow-hidden">
       {/* Abstract background shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div 
+        <motion.div
           animate={pulseAnimation}
           className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-blue-600/10 blur-3xl"
         ></motion.div>
-        <motion.div 
+        <motion.div
           animate={pulseAnimation}
           className="absolute top-1/3 right-1/4 w-64 h-64 rounded-full bg-purple-600/10 blur-3xl"
         ></motion.div>
-        <motion.div 
+        <motion.div
           animate={pulseAnimation}
           className="absolute bottom-0 right-1/3 w-80 h-80 rounded-full bg-emerald-600/10 blur-3xl"
         ></motion.div>
@@ -219,13 +220,13 @@ const PointSystemAndLeaderboard = () => {
             <h1 className="text-5xl sm:text-6xl font-bold mb-4 bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent">
               Base West Africa Point System
             </h1>
-            <motion.div 
+            <motion.div
               animate={{ width: ["0%", "100%"] }}
               transition={{ duration: 1, delay: 0.8 }}
               className="h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-full mx-auto mt-1"
             ></motion.div>
           </motion.div>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -237,95 +238,36 @@ const PointSystemAndLeaderboard = () => {
           </motion.p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {/* Points Breakdown with animations */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7 }}
-            className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-md rounded-2xl p-8 border border-gray-700/50 shadow-xl relative overflow-hidden"
-          >
-            {/* Background decorative elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-600/10 rounded-full blur-3xl opacity-70"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-600/10 rounded-full blur-2xl opacity-70"></div>
-
-            <motion.div 
-              className="flex items-center mb-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <div className="mr-4 p-3 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-xl backdrop-blur-md">
-                <Award className="w-8 h-8 text-emerald-300" />
-              </div>
-              <h3 className="text-3xl font-bold bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
-                Points Breakdown
-              </h3>
-            </motion.div>
-
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="space-y-5 relative z-10"
-            >
-              {pointCategories.map((item, index) => (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  className="flex items-start border-b border-gray-700/30 pb-4 hover:bg-gray-800/30 p-3 rounded-xl transition-all duration-300"
-                  whileHover={{
-                    scale: 1.02,
-                    backgroundColor: "rgba(45, 55, 72, 0.5)",
-                  }}
-                >
-                  <div className={`${item.color} rounded-xl p-3 mr-4 flex-shrink-0 shadow-lg border border-white/10`}>
-                    <span className="font-bold text-white text-lg flex items-center gap-2">
-                      {item.points}
-                    </span>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-white flex items-center gap-2 text-lg">
-                      <span className={`p-1.5 rounded-lg ${item.iconBg}`}>
-                        {item.icon}
-                      </span>
-                      {item.category}
-                    </h4>
-                    <p className="text-gray-300 mt-1 opacity-80">{item.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/* Leaderboard with animations */}
+        {/* Both sections in a responsive grid */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-12">
+          {/* Top Contributors Section */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-md rounded-2xl p-8 border border-gray-700/50 shadow-xl relative overflow-hidden"
+            className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-md rounded-2xl p-4 sm:p-6 lg:p-8 border border-gray-700/50 shadow-xl relative overflow-hidden"
           >
             {/* Background decorative elements */}
             <div className="absolute top-0 left-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl opacity-70"></div>
             <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-600/10 rounded-full blur-2xl opacity-70"></div>
 
             <motion.div 
-              className="flex items-center mb-8"
+              className="flex items-center mb-6 sm:mb-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
               <div className="mr-4 p-3 bg-gradient-to-br from-yellow-500/20 to-amber-500/20 rounded-xl backdrop-blur-md">
-                <Trophy className="w-8 h-8 text-yellow-300" />
+                <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-300" />
               </div>
-              <h3 className="text-3xl font-bold bg-gradient-to-r from-yellow-300 to-amber-300 bg-clip-text text-transparent">
+              <h3 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-yellow-300 to-amber-300 bg-clip-text text-transparent">
                 Top Contributors
               </h3>
             </motion.div>
 
             <div className="flex justify-between text-gray-400 mb-4 px-3 text-sm font-medium uppercase tracking-wider">
               <span>Contributor</span>
-              <span className="mr-4">Points</span>
+              <span>Points</span>
             </div>
 
             <motion.div
@@ -338,23 +280,25 @@ const PointSystemAndLeaderboard = () => {
                 <motion.div
                   key={index}
                   variants={itemVariants}
-                  className="flex items-center border-b border-gray-700/30 pb-4 hover:bg-gray-800/30 p-3 rounded-xl transition-all duration-300"
+                  className="flex items-center gap-3 border-b border-gray-700/30 pb-4 hover:bg-gray-800/30 p-3 rounded-xl transition-all duration-300"
                   whileHover={{
                     scale: 1.02,
                     backgroundColor: "rgba(45, 55, 72, 0.5)",
                   }}
                 >
-                  <div className="relative mr-4 flex-shrink-0">
-                    <div className="w-16 h-16 rounded-xl bg-gray-800 overflow-hidden border-2 border-gray-700 shadow-lg group-hover:border-emerald-500 transition-all duration-300">
-                      <img
-                        src={`/api/placeholder/64/64`}
+                  <div className="relative flex-shrink-0">
+                    <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-xl bg-gray-800 overflow-hidden border-2 border-gray-700 shadow-lg group-hover:border-emerald-500 transition-all duration-300">
+                      <Image
+                        src={contributor.avatar}
                         alt={contributor.name}
+                        width={64}
+                        height={64}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     {index < 3 && (
                       <div
-                        className={`absolute -top-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-lg ${
+                        className={`absolute -top-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-lg ${
                           index === 0
                             ? "bg-gradient-to-br from-yellow-400 to-yellow-600 ring-2 ring-yellow-300/50"
                             : index === 1
@@ -366,8 +310,9 @@ const PointSystemAndLeaderboard = () => {
                       </div>
                     )}
                   </div>
-                  <div className="flex-grow">
-                    <h4 className="font-medium text-white flex items-center text-lg">
+
+                  <div className="flex-grow min-w-0">
+                    <h4 className="font-medium text-white flex items-center text-sm sm:text-lg truncate">
                       {contributor.name}
                       {index === 0 && (
                         <motion.div
@@ -377,16 +322,18 @@ const PointSystemAndLeaderboard = () => {
                             duration: 1.5,
                             ease: "easeInOut",
                           }}
+                          className="ml-2 flex-shrink-0"
                         >
-                          <Star className="w-5 h-5 ml-2 text-yellow-400 fill-yellow-400" />
+                          <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-yellow-400" />
                         </motion.div>
                       )}
                     </h4>
-                    <p className="text-xs text-gray-300 opacity-80 mt-1">
+                    <p className="text-xs text-gray-300 opacity-80 mt-1 truncate">
                       {contributor.contributions.join(" • ")}
                     </p>
                   </div>
-                  <div className="px-4 py-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-sm rounded-xl text-emerald-300 font-bold ml-2 border border-emerald-500/30 shadow-lg">
+
+                  <div className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-sm rounded-xl text-emerald-300 font-bold border border-emerald-500/30 shadow-lg text-sm sm:text-base whitespace-nowrap">
                     {isInView ? (
                       <Counter value={contributor.points.toString()} />
                     ) : (
@@ -402,18 +349,62 @@ const PointSystemAndLeaderboard = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5, duration: 0.5 }}
-              className="mt-8 text-center"
+              className="mt-6 sm:mt-8 text-center"
             >
               <motion.a
                 href="/leaderboard"
-                className="inline-flex items-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 px-6 rounded-xl shadow-lg hover:shadow-emerald-500/20 transition-all duration-300 font-medium"
+                className="inline-flex items-center bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-xl shadow-lg hover:shadow-emerald-500/20 transition-all duration-300 text-sm sm:text-base font-medium"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >
                 View Full Leaderboard
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
               </motion.a>
             </motion.div>
+          </motion.div>
+
+          {/* Points Breakdown Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-gray-700/50 shadow-xl relative overflow-hidden h-full"
+          >
+            <div className="flex items-center mb-6">
+              <div className="mr-3 p-2 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-lg">
+                <Award className="w-5 h-5 text-emerald-300" />
+              </div>
+              <h3 className="text-xl font-bold bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
+                Points Breakdown
+              </h3>
+            </div>
+
+            <div className="space-y-3">
+              {pointCategories.map((category, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-800/30 transition-all duration-300 border border-transparent hover:border-gray-700/50"
+                >
+                  <div className={`flex-shrink-0 p-2 rounded-lg ${category.iconBg}`}>
+                    {category.icon}
+                  </div>
+
+                  <div className="flex-grow min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="font-medium text-white text-sm">
+                        {category.category}
+                      </h4>
+                      <div className="flex-shrink-0 px-2.5 py-1 bg-emerald-500/10 rounded-lg text-emerald-300 text-sm font-medium">
+                        {category.points}
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                      {category.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </motion.div>
         </div>
 
@@ -425,29 +416,29 @@ const PointSystemAndLeaderboard = () => {
           className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20"
         >
           {[
-            { 
-              label: "Active Contributors", 
+            {
+              label: "Active Contributors",
               value: "138",
               icon: <Users className="w-6 h-6" />,
               color: "from-blue-400 to-indigo-500",
               bgColor: "from-blue-500/10 to-indigo-500/10"
             },
-            { 
-              label: "Projects Built", 
+            {
+              label: "Projects Built",
               value: "42",
               icon: <Zap className="w-6 h-6" />,
               color: "from-yellow-400 to-amber-500",
               bgColor: "from-yellow-500/10 to-amber-500/10"
             },
-            {    
-              label: "Events Organized", 
+            {
+              label: "Events Organized",
               value: "23",
               icon: <Users className="w-6 h-6" />,
               color: "from-purple-400 to-violet-500",
               bgColor: "from-purple-500/10 to-violet-500/10"
             },
-            { 
-              label: "Total Points Awarded", 
+            {
+              label: "Total Points Awarded",
               value: "4879",
               icon: <Award className="w-6 h-6" />,
               color: "from-emerald-400 to-teal-500",
@@ -459,7 +450,7 @@ const PointSystemAndLeaderboard = () => {
               whileHover={{ y: -5, scale: 1.03 }}
               className={`bg-gradient-to-br ${stat.bgColor} backdrop-blur-md rounded-2xl p-6 text-center border border-gray-700/30 shadow-xl relative overflow-hidden group`}
             >
-              <motion.div 
+              <motion.div
                 animate={floatingAnimation}
                 className={`flex justify-center items-center w-12 h-12 mx-auto mb-4 rounded-xl bg-gradient-to-r ${stat.color} text-white`}
               >
@@ -489,7 +480,7 @@ const PointSystemAndLeaderboard = () => {
           <div className="absolute inset-0 opacity-10 bg-[url('/grid-pattern.svg')] bg-center"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-600/5 rounded-full blur-3xl opacity-70"></div>
 
-          <motion.div 
+          <motion.div
             className="flex items-center mb-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -536,7 +527,7 @@ const PointSystemAndLeaderboard = () => {
                 transition={{ type: "spring", stiffness: 300 }}
                 className={`p-6 rounded-2xl bg-gradient-to-br ${item.bgGradient} backdrop-blur-md border border-gray-700/30 shadow-lg group relative overflow-hidden`}
               >
-                <motion.div 
+                <motion.div
                   animate={floatingAnimation}
                   className={`w-20 h-20 rounded-2xl bg-gradient-to-r ${item.color} flex items-center justify-center mb-6 mx-auto shadow-lg border border-white/10`}
                 >
