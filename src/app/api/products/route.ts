@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { ProductSchema } from '@/utils/validation';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 const prisma = new PrismaClient();
 
@@ -42,14 +44,34 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return new NextResponse(
+        JSON.stringify({ error: "Not authenticated" }),
+        { status: 401 }
+      );
+    }
+
+    // Get the status from the URL query parameters
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get("status");
+
     const products = await prisma.product.findMany({
-      where: { status: 'pending' },
-      orderBy: { submittedAt: 'desc' }
+      where: status ? { status: status } : {},
+      orderBy: {
+        submittedAt: 'desc'
+      }
     });
+
     return NextResponse.json(products);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
+    console.error("Error fetching products:", error);
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      { status: 500 }
+    );
   }
 } 

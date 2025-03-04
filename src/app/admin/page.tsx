@@ -36,25 +36,36 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>('pending');
   const [alert, setAlert] = useState<AlertState | null>(null);
 
-  const fetchProducts = useCallback(async () => {
+  const fetchProducts = async (status: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/products/${activeTab}`);
-      if (!response.ok) throw new Error('Failed to fetch products');
+      const response = await fetch(`/api/products?status=${status}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Important for sending cookies
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       setProducts(data);
       setError(null);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to fetch products');
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError('Failed to load products');
       setProducts([]);
     } finally {
       setLoading(false);
     }
-  }, [activeTab]);
+  };
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    fetchProducts(activeTab);
+  }, [fetchProducts, activeTab]);
 
   const handleApprove = async (id: string) => {
     try {
@@ -71,7 +82,7 @@ export default function AdminPage() {
         message: 'Product approved successfully'
       });
       
-      fetchProducts();
+      fetchProducts(activeTab);
     } catch (error) {
       setAlert({
         type: 'error',
@@ -95,7 +106,7 @@ export default function AdminPage() {
         message: 'Product rejected successfully'
       });
       
-      fetchProducts();
+      fetchProducts(activeTab);
     } catch (error) {
       setAlert({
         type: 'error',
