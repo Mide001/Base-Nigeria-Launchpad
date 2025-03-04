@@ -36,7 +36,7 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>('pending');
   const [alert, setAlert] = useState<AlertState | null>(null);
 
-  const fetchProducts = async (status: string) => {
+  const fetchProducts = useCallback(async (status: string) => {
     try {
       setLoading(true);
       const response = await fetch(`/api/products?status=${status}`, {
@@ -52,6 +52,7 @@ export default function AdminPage() {
       }
 
       const data = await response.json();
+      console.log('Fetched products:', data); // Debug log
       setProducts(data);
       setError(null);
     } catch (err) {
@@ -61,11 +62,11 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchProducts(activeTab);
-  }, [fetchProducts, activeTab]);
+  }, [activeTab, fetchProducts]);
 
   const handleApprove = async (id: string) => {
     try {

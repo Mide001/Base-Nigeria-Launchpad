@@ -8,13 +8,11 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String?
-  email     String   @unique
-  password  String
-  role      String   @default("user")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String @unique
+  password String
+  role     String @default("user")
 }
 
 model Product {
@@ -27,7 +25,6 @@ model Product {
   website     String?
   twitter     String?
   github      String?
-  status      String   @default("pending") // pending, approved, rejected
+  status      String   @default("pending")
   submittedAt DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 } 

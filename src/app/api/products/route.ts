@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { ProductSchema } from '@/utils/validation';
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
 
 const prisma = new PrismaClient();
 
@@ -46,7 +45,7 @@ export async function POST(req: Request) {
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
 
     if (!session) {
       return new NextResponse(
@@ -55,9 +54,10 @@ export async function GET(request: Request) {
       );
     }
 
-    // Get the status from the URL query parameters
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
+
+    console.log('Fetching products with status:', status); // Debug log
 
     const products = await prisma.product.findMany({
       where: status ? { status: status } : {},
@@ -65,6 +65,8 @@ export async function GET(request: Request) {
         submittedAt: 'desc'
       }
     });
+
+    console.log('Found products:', products); // Debug log
 
     return NextResponse.json(products);
   } catch (error) {
