@@ -31,7 +31,7 @@ const WestAfricanProducts: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('/api/products/approved', {
+        const response = await fetch('/api/public/products', {
           cache: 'no-store' // For real-time updates
         });
         if (response.ok) {
